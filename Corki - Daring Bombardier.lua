@@ -49,7 +49,7 @@ if DOWNLOADING_LIBS then return end
 
 local UPDATE_NAME = "Corki - Daring Bombardier"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Corki%20-%20Daring%20Bombardier.lua"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Corki%20-%20Daring%20Bombardier.lua" .. "?rand=" .. math.random(1, 10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
