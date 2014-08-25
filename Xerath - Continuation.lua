@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" then return end
 
-local version = "1.01"
+local version = "1.02"
 
 _G.UseUpdater = true
 
@@ -253,7 +253,7 @@ function OnLoad()
 		Menu.Harass:addParam("ManaCheck", "Don't harass if mana < %", SCRIPT_PARAM_SLICE, 10, 0, 100)
 		Menu.Harass:addParam("Enabled", "Harass!", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("C"))
 	
-	Menu:addSubMenu("RSnipe", "RSnipe")
+	Menu:addSubMenu("RSnipe", "R Snipe")
 		
 		Menu.RSnipe:addParam("AutoR", "Use all charges", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("R"))
 		AllMenu = #Menu.RSnipe._param
@@ -277,13 +277,13 @@ function OnLoad()
 			Menu.RSnipe.Advanced:addParam("Packets", "Use Packets", SCRIPT_PARAM_ONOFF , false)
 			Menu.RSnipe.Advanced:addParam("Dead", "Avoid shoting on people about to die", SCRIPT_PARAM_ONOFF , true)
 
-	Menu:addSubMenu("Farm", "Farm")
+	Menu:addSubMenu("Farm", "Lane Clear")
 		Menu.Farm:addParam("UseQ",  "Use Q", SCRIPT_PARAM_ONOFF, true)
 		Menu.Farm:addParam("UseW",  "Use W", SCRIPT_PARAM_ONOFF, false)
 		Menu.Farm:addParam("ManaCheck", "Don't farm if mana < %", SCRIPT_PARAM_SLICE, 10, 0, 100)
 		Menu.Farm:addParam("Enabled", "Farm!", SCRIPT_PARAM_ONKEYDOWN, false,   string.byte("V"))
 	
-	Menu:addSubMenu("JungleFarm", "JungleFarm")
+	Menu:addSubMenu("JungleFarm", "Jungle Clear")
 		Menu.JungleFarm:addParam("UseQ", "Use Q", SCRIPT_PARAM_ONOFF, true)
 		Menu.JungleFarm:addParam("UseW", "Use W", SCRIPT_PARAM_ONOFF, true)
 		Menu.JungleFarm:addParam("Enabled", "Farm jungle!", SCRIPT_PARAM_ONKEYDOWN, false,   string.byte("V"))
@@ -296,7 +296,7 @@ function OnLoad()
 		Menu.Misc:addSubMenu("Anti-Gapclosers", "AG")
 			AntiGapcloser(Menu.Misc.AG, OnGapclose)
 
-			Menu:addSubMenu("Drawing", "Drawing")
+	Menu:addSubMenu("Drawing", "Drawing")
 	 	DManager:CreateCircle(myHero, SOWi:MyRange() + 50, 1, {255, 255, 255, 255}):AddToMenu(Menu.Drawing, "AA Range", true, true, true)
 
 	 	for spell, range in pairs(Ranges) do
