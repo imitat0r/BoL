@@ -51,7 +51,7 @@ if DOWNLOADING_LIBS then return end
 
 local UPDATE_NAME = "Ahri - the Nine-Tailed Fox"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Ahri%20-%20the%20Nine-Tailed%20Fox.lua"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Ahri%20-%20the%20Nine-Tailed%20Fox.lua" .. "?rand=" .. math.random(1, 10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
