@@ -1,6 +1,6 @@
-##<div align="center">Draconis</div>
+##<div align="center">Draconis's Repository</div>
 ------------------
-#####Scripts in repository:
+#####Scripts in my repository:
 - [Ahri - the Nine-Tailed Fox] (http://botoflegends.com/forum/topic/23178-script-w-vpredictions-ahri-the-nine-tailed-fox/)
 - [Evelynn - Widowmaker] (http://botoflegends.com/forum/topic/26261-script-w-vpredictions-evelynn-widowmaker/)
 - [Ryze - the Rogue Mage] (http://botoflegends.com/forum/topic/23781-script-ryze-the-rogue-mage/)
