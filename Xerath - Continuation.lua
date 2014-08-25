@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" then return end
 
-local version = "1.02"
+local version = "1.03"
 
 _G.UseUpdater = true
 
@@ -35,7 +35,7 @@ if DOWNLOADING_LIBS then return end
 local UPDATE_NAME = "Xerath - Continuation"
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/DraconisBoL/BoL/master/Xerath%20-%20Continuation.lua" .. "?rand=" .. math.random(1, 10000)
-local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
+local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
 function AutoupdaterMsg(msg) print("<b><font color=\"#6699FF\">"..UPDATE_NAME..":</font></b> <font color=\"#FFFFFF\">"..msg..".</font>") end
@@ -253,7 +253,7 @@ function OnLoad()
 		Menu.Harass:addParam("ManaCheck", "Don't harass if mana < %", SCRIPT_PARAM_SLICE, 10, 0, 100)
 		Menu.Harass:addParam("Enabled", "Harass!", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("C"))
 	
-	Menu:addSubMenu("RSnipe", "R Snipe")
+	Menu:addSubMenu("R - Snipe", "RSnipe")
 		
 		Menu.RSnipe:addParam("AutoR", "Use all charges", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("R"))
 		AllMenu = #Menu.RSnipe._param
@@ -277,13 +277,13 @@ function OnLoad()
 			Menu.RSnipe.Advanced:addParam("Packets", "Use Packets", SCRIPT_PARAM_ONOFF , false)
 			Menu.RSnipe.Advanced:addParam("Dead", "Avoid shoting on people about to die", SCRIPT_PARAM_ONOFF , true)
 
-	Menu:addSubMenu("Farm", "Lane Clear")
+	Menu:addSubMenu("Lane Clear", "Farm")
 		Menu.Farm:addParam("UseQ",  "Use Q", SCRIPT_PARAM_ONOFF, true)
 		Menu.Farm:addParam("UseW",  "Use W", SCRIPT_PARAM_ONOFF, false)
 		Menu.Farm:addParam("ManaCheck", "Don't farm if mana < %", SCRIPT_PARAM_SLICE, 10, 0, 100)
 		Menu.Farm:addParam("Enabled", "Farm!", SCRIPT_PARAM_ONKEYDOWN, false,   string.byte("V"))
 	
-	Menu:addSubMenu("JungleFarm", "Jungle Clear")
+	Menu:addSubMenu("Jungle Clear", "JungleFarm")
 		Menu.JungleFarm:addParam("UseQ", "Use Q", SCRIPT_PARAM_ONOFF, true)
 		Menu.JungleFarm:addParam("UseW", "Use W", SCRIPT_PARAM_ONOFF, true)
 		Menu.JungleFarm:addParam("Enabled", "Farm jungle!", SCRIPT_PARAM_ONKEYDOWN, false,   string.byte("V"))
@@ -577,7 +577,7 @@ function OnSendPacket(p)
 	if p.header == Packet.headers.S_MOVE and Q:IsCharging() then
 		local packet = Packet(p)
 		if packet:get("type") ~= 2 then
-			Packet('S_MOVE',{x = mousePos.x, y = mousePos.z}):send()
+			Packet('S_MOVE', {x = mousePos.x, y = mousePos.z}):send()
 			p:Block()
 		end
 	elseif p.header == Packet.headers.S_MOVE and ImCastingR() then
