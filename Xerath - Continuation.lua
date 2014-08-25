@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" or not VIP_USER then return end
 
-local version = "1.0"
+local version = "1.01"
 
 _G.UseUpdater = true
 
@@ -480,7 +480,7 @@ function Combo()
 	local AAtarget = SOWi:GetTarget()
 	SOWi:DisableAttacks()
 
-	if Menu.Combo.Enabled or Menu.Harass.Enabled or (AAtarget and AAtarget.health < 200) or PassiveUp then
+	if (AAtarget and AAtarget.health < 200) or PassiveUp then
 		SOWi:EnableAttacks()
 	end
 
