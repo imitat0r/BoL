@@ -337,7 +337,7 @@ function OnLoad()
 end
 
 function OnGapclose(unit, data)
-	if E:IsReady() then
+	if myHero:CanUseSpell(_E) == READY then
 		E:Cast(unit)
 	end
 end
