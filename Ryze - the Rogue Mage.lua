@@ -49,7 +49,7 @@ if DOWNLOADING_LIBS then return end
 
 local UPDATE_NAME = "Ryze - the Rogue Mage"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Ryze%20-%20the%20Rogue%20Mage.lua"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Ryze%20-%20the%20Rogue%20Mage.lua" .. "?rand=" .. math.random(1, 10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
