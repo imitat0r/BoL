@@ -702,7 +702,7 @@ end
 
 function AutoIgnite()
 	for _, enemy in ipairs(GetEnemyHeroes()) do
-		if ValidTarget(enemy) and enemy.visible and enemy.health <= getDmg("IGNITE", enemy, myHero) then
+		if Ignite ~= nil and ValidTarget(enemy) and enemy.visible and GetDistance(enemy) <= 600 and enemy.health <= getDmg("IGNITE", enemy, myHero) then
 			CastSpell(Ignite, enemy)
 		end
 	end
