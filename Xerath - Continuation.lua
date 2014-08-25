@@ -1,6 +1,6 @@
-if myHero.charName ~= "Xerath" then return end
+if myHero.charName ~= "Xerath" or not VIP_USER then return end
 
-local version = "1.03"
+local version = "1.05"
 
 _G.UseUpdater = true
 
@@ -77,6 +77,7 @@ local CastingR = 0
 local MainCombo = {_Q, _W, _E, _R, _R, _R}
 local _RM = 1322
 
+local lastSkin = 0
 
 local RStartTime = 0
 local UsedCharges = 0
@@ -233,11 +234,20 @@ function OnLoad()
 	R:TrackCasting({"XerathLocusOfPower2", "xerathlocuspulse"})
 	R:RegisterCastCallback(OnCastR)
 	
-	Menu = scriptConfig("Xerath - Continuation", "Xerath")
+	if myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") then
+		Ignite = SUMMONER_1
+	elseif myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") then
+		Ignite = SUMMONER_2
+	end
+	
+	_G.oldDrawCircle = rawget(_G, 'DrawCircle')
+	_G.DrawCircle = DrawCircle2	
+	
+	Menu = scriptConfig("Xerath - Continuation "..version.."", "Xerath")
 	Menu:addSubMenu("Orbwalking", "Orbwalking")
 		SOWi:LoadToMenu(Menu.Orbwalking, STS)
 
-	Menu:addSubMenu("Target selector", "STS")
+	Menu:addSubMenu("Target Selector", "STS")
 		STS:AddToMenu(Menu.STS)
 
 	Menu:addSubMenu("Combo", "Combo")
@@ -253,7 +263,7 @@ function OnLoad()
 		Menu.Harass:addParam("ManaCheck", "Don't harass if mana < %", SCRIPT_PARAM_SLICE, 10, 0, 100)
 		Menu.Harass:addParam("Enabled", "Harass!", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("C"))
 	
-	Menu:addSubMenu("R - Snipe", "RSnipe")
+	Menu:addSubMenu("RSnipe", "RSnipe")
 		
 		Menu.RSnipe:addParam("AutoR", "Use all charges", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("R"))
 		AllMenu = #Menu.RSnipe._param
@@ -289,6 +299,7 @@ function OnLoad()
 		Menu.JungleFarm:addParam("Enabled", "Farm jungle!", SCRIPT_PARAM_ONKEYDOWN, false,   string.byte("V"))
 
 	Menu:addSubMenu("Misc", "Misc")
+		Menu.Misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 4, { "Battlecast Xerath", "Runeborn Xerath", "Scorched Earth Xerath", "Classic" })
 		Menu.Misc:addParam("WCenter", "Cast W centered", SCRIPT_PARAM_ONOFF, false)
 		Menu.Misc:addParam("WMR", "Cast W at max range", SCRIPT_PARAM_ONOFF, false)
 		Menu.Misc:addParam("AutoEDashing", "Auto E on dashing enemies", SCRIPT_PARAM_ONOFF, true)
@@ -297,17 +308,25 @@ function OnLoad()
 			AntiGapcloser(Menu.Misc.AG, OnGapclose)
 
 	Menu:addSubMenu("Drawing", "Drawing")
-	 	DManager:CreateCircle(myHero, SOWi:MyRange() + 50, 1, {255, 255, 255, 255}):AddToMenu(Menu.Drawing, "AA Range", true, true, true)
+	 	Menu.Drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
+		Menu.Drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("Text", "Draw Text on Target", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
+		Menu.Drawing:addParam("qDraw", "Draw (Q) Range", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("qColor", "Draw (Q) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
+		Menu.Drawing:addParam("wDraw", "Draw (W) Range", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("wColor", "Draw (W) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
+		Menu.Drawing:addParam("eDraw", "Draw (E) Range", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("eColor", "Draw (E) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
+		Menu.Drawing:addParam("rDraw", "Draw (R) Range", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("rColor", "Draw (R) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 
-	 	for spell, range in pairs(Ranges) do
-	 		RangeCircles[spell] = DManager:CreateCircle(myHero, type(range) == "number" and range or range[1], 1, {255, 255, 255, 255})
-	 		RangeCircles[spell]:AddToMenu(Menu.Drawing, SpellToString(spell).." Range", true, true, true)
-	 	end
-
-	 	RangeCircles[_RM] = DManager:CreateCircle(myHero, Ranges[_R][1], 1, {255, 255, 255, 255}):SetMinimap()
-	 	RangeCircles[_RM]:AddToMenu(Menu.Drawing, "R Range (minimap)", true, true, true)
-
-
+		Menu.Drawing:addSubMenu("Lag Free Circles", "lfc")	
+			Menu.Drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
+			Menu.Drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
+			Menu.Drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
+			
 	DLib:AddToMenu(Menu.Drawing, MainCombo)
 
 	Menu:addParam("Version", "Version", SCRIPT_PARAM_INFO, version)
@@ -449,6 +468,8 @@ function OnTick()
 	end
 	
 	AutoIgnite()
+	if Menu.Misc.skinList then ChooseSkin() end
+	if Menu.Drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
 function Combo()
@@ -459,7 +480,7 @@ function Combo()
 	local AAtarget = SOWi:GetTarget()
 	SOWi:DisableAttacks()
 
-	if (AAtarget and AAtarget.health < 200) or PassiveUp then
+	if Menu.Combo.Enabled or Menu.Harass.Enabled or (AAtarget and AAtarget.health < 200) or PassiveUp then
 		SOWi:EnableAttacks()
 	end
 
@@ -559,20 +580,6 @@ function JungleFarm()
 	end
 end
 
-function AutoIgnite()	
-	if myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") then
-		Ignite = SUMMONER_1
-	elseif myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") then
-		Ignite = SUMMONER_2
-	end
-	
-	for _, enemy in ipairs(GetEnemyHeroes()) do
-		if ValidTarget(enemy) and enemy.visible and enemy.health <= getDmg("IGNITE", enemy, myHero) then
-			CastSpell(Ignite, enemy)
-		end
-	end
-end
-
 function OnSendPacket(p)
 	if p.header == Packet.headers.S_MOVE and Q:IsCharging() then
 		local packet = Packet(p)
@@ -586,19 +593,118 @@ function OnSendPacket(p)
 end
 
 function OnDraw()
-	if Menu.RSnipe.Alerter.Alert and myHero:GetSpellData(_R).level > 0 then
-		for i, enemy in ipairs(GetEnemyHeroes()) do
-			if ValidTarget(enemy, R.range) and DLib:IsKillable(enemy, GetRCombo()) then
-				local pos = WorldToScreen(D3DXVECTOR3(enemy.x, enemy.y, enemy.z))
-				DrawText("Snipe!", 17, pos.x, pos.y, ARGB(255,0,255,0))
-			end
+	if not myHero.dead and not Menu.Drawing.mDraw then
+		if myHero:CanUseSpell(_Q) == READY and Menu.Drawing.qDraw then 
+			DrawCircle(myHero.x, myHero.y, myHero.z, Q.range, RGB(Menu.Drawing.qColor[2], Menu.Drawing.qColor[3], Menu.Drawing.qColor[4]))
 		end
-	end 
+		if myHero:CanUseSpell(_W) == READY and Menu.Drawing.wDraw then 
+			DrawCircle(myHero.x, myHero.y, myHero.z, W.range, RGB(Menu.Drawing.wColor[2], Menu.Drawing.wColor[3], Menu.Drawing.wColor[4]))
+		end
+		if myHero:CanUseSpell(_E) == READY and Menu.Drawing.eDraw then 
+			DrawCircle(myHero.x, myHero.y, myHero.z, E.range, RGB(Menu.Drawing.eColor[2], Menu.Drawing.eColor[3], Menu.Drawing.eColor[4]))
+		end
+		if myHero:CanUseSpell(_R) == READY and Menu.Drawing.rDraw then 
+			DrawCircle(myHero.x, myHero.y, myHero.z, R.range, RGB(Menu.Drawing.rColor[2], Menu.Drawing.rColor[3], Menu.Drawing.rColor[4]))
+		end
+		
+		if Menu.Drawing.myHero then
+			DrawCircle(myHero.x, myHero.y, myHero.z, TrueRange(), RGB(Menu.Drawing.myColor[2], Menu.Drawing.myColor[3], Menu.Drawing.myColor[4]))
+		end
+		
+		if Menu.Drawing.Target and Target ~= nil then
+			DrawCircle(Target.x, Target.y, Target.z, 80, ARGB(255, 10, 255, 10))
+		end
+		
+		if Menu.RSnipe.Alerter.Alert and myHero:GetSpellData(_R).level > 0 then
+			for i, enemy in ipairs(GetEnemyHeroes()) do
+				if ValidTarget(enemy, R.range) and DLib:IsKillable(enemy, GetRCombo()) then
+					local pos = WorldToScreen(D3DXVECTOR3(enemy.x, enemy.y, enemy.z))
+					DrawText("Snipe!", 17, pos.x, pos.y, ARGB(255,0,255,0))
+				end
+			end
+		end 
+	end
 end
 
 function OnWndMsg(Msg, Key)
 	if Msg == 256 and Key == Menu.RSnipe._param[TapMenu].key then
 		RPressTime2 = true
 		RCooldownTime = 0
+	end
+end
+
+-- shalzuth
+function GenModelPacket(champ, skinId)
+	p = CLoLPacket(0x97)
+	p:EncodeF(myHero.networkID)
+	p.pos = 1
+	t1 = p:Decode1()
+	t2 = p:Decode1()
+	t3 = p:Decode1()
+	t4 = p:Decode1()
+	p:Encode1(t1)
+	p:Encode1(t2)
+	p:Encode1(t3)
+	p:Encode1(bit32.band(t4,0xB))
+	p:Encode1(1)
+	p:Encode4(skinId)
+	for i = 1, #champ do
+		p:Encode1(string.byte(champ:sub(i,i)))
+	end
+	for i = #champ + 1, 64 do
+		p:Encode1(0)
+	end
+	p:Hide()
+	RecvPacket(p)
+end
+
+function ChooseSkin()
+	if Menu.Misc.skinList ~= lastSkin then
+		lastSkin = Menu.Misc.skinList
+		GenModelPacket("Xerath", Menu.Misc.skinList)
+	end
+end
+
+-- Barasia, vadash, viseversa
+function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
+  radius = radius or 300
+  quality = math.max(8,round(180/math.deg((math.asin((chordlength/(2*radius)))))))
+  quality = 2 * math.pi / quality
+  radius = radius*.92
+  
+  local points = {}
+  for theta = 0, 2 * math.pi + quality, quality do
+    local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+    points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+  end
+  
+  DrawLines2(points, width or 1, color or 4294967295)
+end
+
+function round(num) 
+  if num >= 0 then return math.floor(num+.5) else return math.ceil(num-.5) end
+end
+
+function DrawCircle2(x, y, z, radius, color)
+  local vPos1 = Vector(x, y, z)
+  local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+  local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+  local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+  
+  if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
+    DrawCircleNextLvl(x, y, z, radius, Menu.Drawing.lfc.Width, color, Menu.Drawing.lfc.CL) 
+  end
+end
+
+function TrueRange()
+	return myHero.range + GetDistance(myHero, myHero.minBBox)
+end
+
+
+function AutoIgnite()
+	for _, enemy in ipairs(GetEnemyHeroes()) do
+		if ValidTarget(enemy) and enemy.visible and enemy.health <= getDmg("IGNITE", enemy, myHero) then
+			CastSpell(Ignite, enemy)
+		end
 	end
 end
