@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" then return end
 
-local version = 1.0
+local version = "1.01"
 
 _G.UseUpdater = true
 
