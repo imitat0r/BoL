@@ -49,7 +49,7 @@ if DOWNLOADING_LIBS then return end
 
 local UPDATE_NAME = "Irelia - Hiten Style"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Irelia%20-%20Hiten%20Style.lua"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Irelia%20-%20Hiten%20Style.lua" .. "?rand=" .. math.random(1, 10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
