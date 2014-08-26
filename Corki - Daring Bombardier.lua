@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.03"
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.02
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -186,7 +186,7 @@ function LaneClear()
 				end
 				
 				if Settings.lane.laneR and GetDistance(minion) <= SkillR.range and SkillR.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = minion.x, toY = minion.z, fromX = minion.x, fromY = minion.z }):send() end
 					CastSpell(_R, minion.x, minion.z)
 				end
 			end		 
