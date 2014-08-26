@@ -1,9 +1,9 @@
-local version = "1.19"
+local version = "1.20"
 
 --[[
 	Evelynn - Widowmaker
 		Author: Draconis
-		Version: 1.19
+		Version: 1.20
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -389,7 +389,7 @@ function Menu()
 			
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")	
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
-		Settings.misc:addParam("slowsW", "Use "..SkillW.name.." if slowed", SCRIPT_PARAM_ONOFF, true)
+		Settings.misc:addParam("slowsW", "Use "..SkillW.name.." (W) if slowed", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 4, { "Shadow Evelynn", "Masquerade Evelynn", "Tango Evelynn", "Classic" })
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
@@ -705,7 +705,7 @@ function DrawCircle2(x, y, z, radius, color)
 end
 
 function OnGainBuff(unit, buff)
-	if VIP_USER and unit ~= nil and unit == myHero and SkillW.ready and Settings.misc.slowsW then
+	if unit ~= nil and unit == myHero and SkillW.ready and Settings.misc.slowsW then
 		if buff.type == BUFF_SLOW then
 			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 			CastSpell(_W)
@@ -717,5 +717,19 @@ function Gameover()
 	if GetGame().isOver then
 		UpdateWeb(false, ScriptName, id, HWID)
 		startUp = false;
+	end
+end
+
+function OnSendPacket(p)
+	local packet = Packet(p)
+	if packet:get('name') == 'S_CAST' then
+		local SpellID = packet:get('spellId')
+		if packet:get('spellId') == _R then
+			local Targets = 0
+			for i, Target in pairs(GetEnemyHeroes()) do
+				if Target ~= nil and not Target.dead and Target.visible and GetDistance(mousePos, Target) < SkillR.width then Targets = Targets + 1 end
+			end
+			if Targets == 0 then p:Block() end
+		end
 	end
 end
