@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" or not VIP_USER then return end
 
-local version = "1.0"
+local version = "1.01"
 
 _G.UseUpdater = true
 
@@ -626,7 +626,7 @@ function OnDraw()
 			DrawCircle(Target.x, Target.y, Target.z, 80, ARGB(255, 10, 255, 10))
 		end
 		
-		if Menu.RSnipe.Alerter.Alert and myHero:GetSpellData(_R).level > 0 then
+		if Menu.RSnipe.Alerter.Alert and myHero:GetSpellData(_R).level > 0 and myHero:CanUseSpell(_R) == READY then
 			for i, enemy in ipairs(GetEnemyHeroes()) do
 				if ValidTarget(enemy, R.range) and DLib:IsKillable(enemy, GetRCombo()) then
 					local pos = WorldToScreen(D3DXVECTOR3(enemy.x, enemy.y, enemy.z))
