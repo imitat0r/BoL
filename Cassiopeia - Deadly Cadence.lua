@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.0
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -166,7 +166,7 @@ function Combo(unit)
 end
 
 function Harass(unit)
-	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow() then
+	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow("Harass") then
 		if Settings.harass.useQ then CastQ(unit) end
 		if Settings.harass.useE then CastE(unit) end
 	end
@@ -174,7 +174,7 @@ end
 
 function LaneClear()
 	enemyMinions:update()
-	if LaneClearKey then
+	if LaneClearKey and not IsMyManaLow("LaneClear") then
 		for i, minion in pairs(enemyMinions.objects) do
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
@@ -205,7 +205,7 @@ function LaneClear()
 end
 
 function JungleClear()
-	if Settings.jungle.jungleKey then
+	if Settings.jungle.jungleKey and not IsMyManaLow("JungleClear") then
 		local JungleMob = GetJungleMob()
 		
 		if JungleMob ~= nil then
@@ -240,6 +240,8 @@ end
 
 function CastW(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then
+		if Settings.combo.useW and isPoisoned(unit) then return end
+		
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 		
 		if MainTargetHitChance >= 2 then
@@ -339,11 +341,25 @@ function Checks()
 	Gameover()
 end
 
-function IsMyManaLow()
-	if myHero.mana < (myHero.maxMana * ( Settings.harass.harassMana / 100)) then
-		return true
-	else
-		return false
+function IsMyManaLow(mode)
+	if mode == "Harass" then
+		if myHero.mana < (myHero.maxMana * ( Settings.harass.harassMana / 100)) then
+			return true
+		else
+			return false
+		end
+	elseif mode == "LaneClear" then
+		if myHero.mana < (myHero.maxMana * ( Settings.lane.laneMana / 100)) then
+			return true
+		else
+			return false
+		end
+	elseif mode == "JungleClear" then
+		if myHero.mana < (myHero.maxMana * ( Settings.jungle.jungleMana / 100)) then
+			return true
+		else
+			return false
+		end
 	end
 end
 
@@ -353,6 +369,7 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo facing", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
+		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) only if Q misses", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
 	
@@ -368,6 +385,7 @@ function Menu()
 		Settings.lane:addParam("laneQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
 		Settings.lane:addParam("laneW", "Clear with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
 		Settings.lane:addParam("laneE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
+		Settings.lane:addParam("laneMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.lane:permaShow("laneKey")
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Jungle Clear Settings", "jungle")
@@ -375,6 +393,7 @@ function Menu()
 		Settings.jungle:addParam("jungleQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
 		Settings.jungle:addParam("jungleW", "Clear with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
 		Settings.jungle:addParam("jungleE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
+		Settings.jungle:addParam("jungleMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.jungle:permaShow("jungleKey")
 		
 	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
