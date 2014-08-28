@@ -1,9 +1,9 @@
-local version = "1.01"
+local version = "1.02"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.01
+		Version: 1.02
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -118,9 +118,14 @@ function OnTick()
 	
 	if Settings.ks.killSteal then
 		KillSteal()
-	end
-
+	end	
+	
 	Checks()
+	
+	autoLevelSetSequence(levelSequence)
+	Sequence()
+	
+	CastAutoR()
 end
 
 function OnDraw()
@@ -263,27 +268,48 @@ end
 function CastR(unit)
 	if Settings.combo.useR == 1 then return end
 	
-	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready then
+	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready and isBothFacing(myHero, unit, 160) then
 		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillR.delay, SkillR.angle, SkillR.range, SkillR.speed, myHero)
 		
-		local FacingTargets = 0
-		for i, Facing in pairs(GetEnemyHeroes()) do
-			if Facing ~= nil and not Facing.dead and Facing.visible and isBothFacing(myHero, Facing, 160) then FacingTargets = FacingTargets + 1 end
-		end
-		
 		if mainHitChance >= 2 then
-			if Settings.combo.useR == 2 and maxHit >= FacingTargets and maxHit >= 1 then
+			if Settings.combo.useR == 2 and maxHit >= 1 then
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
-			elseif Settings.combo.useR == 3 and maxHit >= FacingTargets and maxHit >= 2 then
+			elseif Settings.combo.useR == 3 and maxHit >= 2 then
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
-			elseif Settings.combo.useR == 4 and maxHit >= FacingTargets and maxHit >= 3 then
+			elseif Settings.combo.useR == 4 and maxHit >= 3 then
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
-			elseif Settings.combo.useR == 5 and maxHit >= FacingTargets and maxHit >= 4 then
+			elseif Settings.combo.useR == 5 and maxHit >= 4 then
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
+			end
+		end
+	end
+end
+
+function CastAutoR()
+	if Settings.combo.useR == 1 then return end
+	
+	for _, enemy in ipairs(GetEnemyHeroes()) do
+		if ValidTarget(enemy) and enemy.visible and GetDistance(enemy) <= SkillR.range and SkillR.ready and isBothFacing(myHero, enemy, 160) then
+			local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(enemy, SkillR.delay, SkillR.angle, SkillR.range, SkillR.speed, myHero)
+		
+			if mainHitChance >= 2 then
+				if Settings.combo.useAutoR == 2 and maxHit >= 1 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
+					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
+				elseif Settings.combo.useAutoR == 3 and maxHit >= 2 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
+						CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
+				elseif Settings.combo.useAutoR == 4 and maxHit >= 3 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
+					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
+				elseif Settings.combo.useAutoR == 5 and maxHit >= 4 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
+					CastSpell(_R, mainCastPosition.x, mainCastPosition.z)
+				end
 			end
 		end
 	end
@@ -368,7 +394,8 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
-		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo facing", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
+		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
+		Settings.combo:addParam("useAutoR", "Use "..SkillR.name.." (R) auto if", SCRIPT_PARAM_LIST, 3, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) only if Q misses", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
@@ -425,6 +452,7 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Desperada", "Siren", "Mythic", "Jade Fang", "Classic" })
+		Settings.misc:addParam("levelSkills", "Auto level spells", SCRIPT_PARAM_LIST, 1, { "No", "Mid", "Support", "Top" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
@@ -451,6 +479,7 @@ function Variables()
 	JungleFocusMobs = {}
 	
 	lastSkin = 0
+	levelSequence = nil
 	
 	if myHero:GetSpellData(SUMMONER_1).name:find(Ignite.name) then
 		Ignite.slot = SUMMONER_1
@@ -805,4 +834,16 @@ function isPoisoned(target)
 		end
 	end
 	return false
+end
+
+function Sequence()
+	if Settings.misc.levelSkills == 1 then
+		levelSequence = nil
+	elseif Settings.misc.levelSkills == 2 then
+		levelSequence = {1,3,3,2,3,4,3,1,3,1,4,1,1,2,2,4,2,2} -- Mid
+	elseif Settings.misc.levelSkills == 3 then
+		levelSequence = {1,3,1,2,1,4,1,3,1,3,4,3,3,2,2,4,2,2} -- Support
+	elseif Settings.misc.levelSkills == 4 then
+		levelSequence = {1,2,1,3,1,4,1,3,1,3,4,3,3,2,2,4,2,2} -- Top
+	end
 end
