@@ -291,7 +291,7 @@ function CastR(unit)
 end
 
 function CastAutoR()
-	if Settings.combo.useR == 1 then return end
+	if Settings.combo.useAutoR == 1 then return end
 	
 	for _, enemy in ipairs(GetEnemyHeroes()) do
 		if ValidTarget(enemy) and enemy.visible and GetDistance(enemy) <= SkillR.range and SkillR.ready and isBothFacing(myHero, enemy, 160) then
