@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.021"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.02
+		Version: 1.021
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -269,9 +269,10 @@ function CastR(unit)
 	if Settings.combo.useR == 1 then return end
 	
 	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready and isBothFacing(myHero, unit, 160) then
+		local ComboDamage = getDmg("Q", unit, myHero) + getDmg("Q", unit, myHero) + getDmg("W", unit, myHero) + getDmg("E", unit, myHero) + getDmg("E", unit, myHero) + getDmg("R", unit, myHero)
 		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillR.delay, SkillR.angle, SkillR.range, SkillR.speed, myHero)
 		
-		if mainHitChance >= 2 then
+		if mainHitChance >= 2 and unit.health < ComboDamage then
 			if Settings.combo.useR == 2 and maxHit >= 1 then
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
