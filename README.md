@@ -10,3 +10,4 @@
 - [Viktor - Machine Herald] (http://botoflegends.com/forum/topic/33175-script-w-vpredictions-viktor-machine-herald/)
 - [Corki - Daring Bombardier] (http://botoflegends.com/forum/topic/33639-script-w-vpredictions-corki-daring-bombardier/)
 - [Cassiopeia - Deadly Cadence] (http://botoflegends.com/forum/topic/33867-script-w-vpredictions-cassiopeia-deadly-cadence/)
+- [Malzahar - Prophet of the Void] (http://botoflegends.com/forum/topic/34446-script-w-vpredictions-malzahar-prophet-of-the-void/)
