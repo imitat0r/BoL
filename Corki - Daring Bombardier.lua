@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.04"
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.03
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -415,7 +415,7 @@ function Variables()
 	SkillW = { name = "Valkyrie", range = 800, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Gatling Gun", range = 600, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Missile Barrage", range = 1225, delay = 0.25, speed = 2000, width = 75, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillR.range, myHero, MINION_SORT_HEALTH_ASC)
 	
