@@ -1,9 +1,9 @@
-local version = "1.166"
+local version = "1.167"
 
 --[[
 	Ahri - the Nine-Tailed Fox
 		Author: Draconis
-		Version: 1.166
+		Version: 1.167
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -448,7 +448,7 @@ function Variables()
 	SkillW = { name = "Fox-Fire", range = 800, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Charm", range = 975, delay = 0.25, speed = 1500, width = 100, ready = false }
 	SkillR = { name = "Spirit Rush", range = 550, delay = nil, speed = nil, width = nil, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillE.range, myHero, MINION_SORT_HEALTH_ASC)
 	
