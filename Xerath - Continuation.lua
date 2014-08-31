@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" or not VIP_USER then return end
 
-local version = "1.01"
+local version = "1.02"
 
 _G.UseUpdater = true
 
@@ -234,9 +234,9 @@ function OnLoad()
 	R:TrackCasting({"XerathLocusOfPower2", "xerathlocuspulse"})
 	R:RegisterCastCallback(OnCastR)
 	
-	if myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") then
+	if myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") then
 		Ignite = SUMMONER_1
-	elseif myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") then
+	elseif myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") then
 		Ignite = SUMMONER_2
 	end
 	
