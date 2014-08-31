@@ -1,9 +1,9 @@
-local version = "1.021"
+local version = "1.022"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.021
+		Version: 1.022
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -469,7 +469,7 @@ function Variables()
 	SkillW = { name = "Miasma", range = 850, delay = 0.375, speed = math.huge, width = 80, ready = false }
 	SkillE = { name = "Twin Fang", range = 700, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Petrifying Gaze", range = 750, delay = 0.5, speed = math.huge, angle = 80, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillR.range, myHero, MINION_SORT_HEALTH_ASC)
 	
