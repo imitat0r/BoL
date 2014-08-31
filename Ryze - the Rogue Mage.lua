@@ -1,9 +1,9 @@
-local version = "1.16"
+local version = "1.17"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.16
+		Version: 1.17
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -479,7 +479,7 @@ function Variables()
 	SkillW = { name = "Rune Prison", range = 600, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Spell Flux", range = 600, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Desperate Power", range = nil, delay = nil, speed = nil, width = nil, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
