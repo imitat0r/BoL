@@ -1,9 +1,9 @@
-local version = "1.20"
+local version = "1.21"
 
 --[[
 	Evelynn - Widowmaker
 		Author: Draconis
-		Version: 1.20
+		Version: 1.21
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -405,7 +405,7 @@ function Variables()
 	SkillW = { name = "Dark Frenzy", range = 650, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Ravage", range = 275, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Agony's Embrace", range = 650, delay = 0.250, speed = 1300, width = 350, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
