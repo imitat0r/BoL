@@ -1,9 +1,9 @@
-local version = "1.07"
+local version = "1.08"
 
 --[[
 	Morgana - Blackthorn Angel
 		Author: Draconis
-		Version: 1.07
+		Version: 1.08
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -385,7 +385,7 @@ function Variables()
 	SkillW = { name = "Dark Frenzy", range = 900, delay = 0.250, speed = 1200, width = 175, ready = false }
 	SkillE = { name = "Black Shield", range = 750, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Soul Shackles", range = 600, delay = nil, speed = nil, width = nil, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
