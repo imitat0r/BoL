@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.03"
 
 --[[
 	Shyvana - Flame Breath
 		Author: Draconis
-		Version: 1.02
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -383,7 +383,7 @@ function Variables()
 	SkillW = { name = "Burnout", range = 350, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Flame Breath", range = 925, delay = 0.125, speed = 1500, width = 80, ready = false }
 	SkillR = { name = "Dragon's Descent", range = 1000, delay = nil, speed = nil, width = nil, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
