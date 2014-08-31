@@ -1,9 +1,9 @@
-local version = "1.05"
+local version = "1.06"
 
 --[[
 	Viktor - Machine Herald
 		Author: Draconis
-		Version: 1.05
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -401,7 +401,7 @@ function Variables()
 	SkillW = { name = "Gravity Field", range = 625, delay = 0.5, speed = 1750, width = 300, ready = false }
 	SkillE = { name = "Death Ray", range = 1240, delay = 0.25, speed = 1200, width = 90, ready = false }
 	SkillR = { name = "Chaos Storm", range = 700, delay = 0.5, speed = 1200, width = 250, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
