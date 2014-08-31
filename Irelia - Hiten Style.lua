@@ -1,9 +1,9 @@
-local version = "1.14"
+local version = "1.15"
 
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
-		Version: 1.14
+		Version: 1.15
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -411,7 +411,7 @@ function Variables()
 	SkillW = { name = "Hiten Style", range = TrueRange(), delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Equilibrium Strike", range = 425, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Transcendent Blades", range = 1000, delay = 0.25, speed = 1200, width = 80, ready = false }
-	Ignite = { name = "SummonerDot", range = 600, slot = nil }
+	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
