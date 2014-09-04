@@ -1,6 +1,6 @@
 if myHero.charName ~= "Xerath" or not VIP_USER then return end
 
-local version = "1.02"
+local version = "1.03"
 
 _G.UseUpdater = true
 
@@ -325,6 +325,8 @@ function OnLoad()
 		Menu.Drawing:addParam("eColor", "Draw (E) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Menu.Drawing:addParam("rDraw", "Draw (R) Range", SCRIPT_PARAM_ONOFF, true)
 		Menu.Drawing:addParam("rColor", "Draw (R) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
+		Menu.Drawing:addParam("rMinimap", "Draw (R) Range on Minimap", SCRIPT_PARAM_ONOFF, true)
+		Menu.Drawing:addParam("rMColor", "Draw (R) Minimap Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 
 		Menu.Drawing:addSubMenu("Lag Free Circles", "lfc")	
 			Menu.Drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
@@ -337,8 +339,6 @@ function OnLoad()
 	
 	EnemyMinions = minionManager(MINION_ENEMY, Ranges[_Q][2], myHero, MINION_SORT_MAXHEALTH_DEC)
 	JungleMinions = minionManager(MINION_JUNGLE, Ranges[_Q][2], myHero, MINION_SORT_MAXHEALTH_DEC)
-	
-	
 end
 
 function OnTargetGapclosing(unit, spell)
@@ -409,8 +409,6 @@ function OnProcessSpell(unit, spell)
 end
 
 function OnTick()
-	SOWi:EnableAttacks()
-
 	if Menu.RSnipe._param[AllMenu].key == Menu.RSnipe._param[JungleMenu].key then
 		Menu.RSnipe._param[AllMenu].key    = 82
 		Menu.RSnipe._param[JungleMenu].key = 74
@@ -487,13 +485,6 @@ function Combo()
 	local QTarget = STS:GetTarget(Ranges[_Q][2])
 	local WTarget = STS:GetTarget(Ranges[_W] + Widths[_W])
 	local ETarget = STS:GetTarget(Menu.Combo.Erange)
-
-	local AAtarget = SOWi:GetTarget()
-	SOWi:DisableAttacks()
-
-	if (AAtarget and AAtarget.health < 200) or PassiveUp then
-		SOWi:EnableAttacks()
-	end
 
 	if QTarget and Menu.Combo.UseQ then
 		if Q:IsCharging() then
@@ -616,6 +607,8 @@ function OnDraw()
 		end
 		if myHero:CanUseSpell(_R) == READY and Menu.Drawing.rDraw then 
 			DrawCircle(myHero.x, myHero.y, myHero.z, R.range, RGB(Menu.Drawing.rColor[2], Menu.Drawing.rColor[3], Menu.Drawing.rColor[4]))
+		elseif Menu.Drawing.rMinimap then
+			DrawCircleMinimap(myHero.x, myHero.y, myHero.z, R.range, 1, RGB(Menu.Drawing.rMColor[2], Menu.Drawing.rMColor[3], Menu.Drawing.rMColor[4]), 100)
 		end
 		
 		if Menu.Drawing.myHero then
