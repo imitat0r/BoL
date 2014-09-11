@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.0
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -161,9 +161,9 @@ function Combo(unit)
 		end
 		
 		CastR(unit)
-		if Settings.combo.useQ then CastQ(unit) end
-		if Settings.combo.useW then CastW(unit) end
 		if Settings.combo.useE then CastE(unit) end
+		if Settings.combo.useW then CastW(unit) end
+		if Settings.combo.useQ then CastQ(unit) end
 	end
 end
 
@@ -172,9 +172,9 @@ function Harass(unit)
 		if Settings.harass.harassMode == 1 then
 			if Settings.harass.useW then CastW(unit) end
 		elseif Settings.harass.harassMode == 2 then
-			if Settings.harass.useQ then CastQ(unit) end
-			if Settings.harass.useW then CastW(unit) end
 			if Settings.harass.useE then CastE(unit) end
+			if Settings.harass.useW then CastW(unit) end
+			if Settings.harass.useQ then CastQ(unit) end
 		end
 	end
 end
@@ -272,11 +272,15 @@ function KillSteal()
 			local qDmg = getDmg("Q", enemy, myHero)
 			local wDmg = getDmg("W", enemy, myHero)
 			
-			if enemy.health <= qDmg and GetDistance(enemy) <= SkillQ.range then
+			if enemy.health <= qDmg and GetDistance(enemy) <= SkillQ.range and SkillQ.ready then
 				CastQ(enemy)
-			elseif enemy.health <= wDmg and GetDistance(enemy) <= SkillW.range then
+			elseif enemy.health <= wDmg and GetDistance(enemy) <= SkillW.range and SKillW.ready then
 				CastW(enemy)
-			elseif enemy.health <= qDmg + wDmg and GetDistance(enemy) <= SkillQ.range then
+			elseif enemy.health <= qDmg + wDmg and GetDistance(enemy) <= SkillQ.range and SkillQ.ready and SkillW.ready then
+				CastW(enemy)
+				CastQ(enemy)
+			elseif enemy.health <= qDmg + wDmg and GetDistance(enemy) > SkillQ.range and SkillQ.ready and SkillW.ready and SkillE.ready then
+				CastE(enemy)
 				CastW(enemy)
 				CastQ(enemy)
 			end
