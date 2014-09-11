@@ -274,7 +274,7 @@ function KillSteal()
 			
 			if enemy.health <= qDmg and GetDistance(enemy) <= SkillQ.range and SkillQ.ready then
 				CastQ(enemy)
-			elseif enemy.health <= wDmg and GetDistance(enemy) <= SkillW.range and SKillW.ready then
+			elseif enemy.health <= wDmg and GetDistance(enemy) <= SkillW.range and SkillW.ready then
 				CastW(enemy)
 			elseif enemy.health <= qDmg + wDmg and GetDistance(enemy) <= SkillQ.range and SkillQ.ready and SkillW.ready then
 				CastW(enemy)
