@@ -119,7 +119,7 @@ function OnTick()
 	
 	if FarmKey then
 		Farm()
-	elseif FarmToggle and not (ComboKey or HarassKey or HarassToggle) then
+	elseif FarmToggle and not (ComboKey or HarassKey) then
 		Farm()
 	end
 	
