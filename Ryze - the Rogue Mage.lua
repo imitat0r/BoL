@@ -1,9 +1,9 @@
-local version = "1.17"
+local version = "1.18"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.17
+		Version: 1.18
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -119,7 +119,7 @@ function OnTick()
 	
 	if FarmKey then
 		Farm()
-	elseif FarmToggle then
+	elseif FarmToggle and not (ComboKey or HarassKey or HarassToggle) then
 		Farm()
 	end
 	
