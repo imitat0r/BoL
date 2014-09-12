@@ -1,9 +1,9 @@
-local version = "1.01"
+local version = "1.02"
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.01
+		Version: 1.02
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -221,6 +221,12 @@ function JungleClear()
 				CastSpell(_E, JungleMob)
 			end
 		end
+	end
+end
+
+function AfterAttack(unit)
+	if unit ~= nil and ValidTarget(unit) and unit.type == myHero.type and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
+		CastSpell(_Q)
 	end
 end
 
@@ -455,6 +461,7 @@ function Variables()
 	
 	VP = VPrediction()
 	SOWi = SOW(VP)
+	SOWi:RegisterOnAttackCallback(AfterAttack)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
