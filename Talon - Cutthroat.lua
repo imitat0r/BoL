@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.03"
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.02
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -156,14 +156,25 @@ end
 
 function Combo(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
-		if Settings.combo.comboItems then
-			UseItems(unit)
+		if Settings.combo.comboMode == 1 then
+			if Settings.combo.comboItems then
+				UseItems(unit)
+			end
+			
+			CastR(unit)
+			if Settings.combo.useE then CastE(unit) end
+			if Settings.combo.useW then CastW(unit) end
+			if Settings.combo.useQ then CastQ(unit) end
+		elseif Settings.combo.comboMode == 2 then
+			if Settings.combo.comboItems then
+				UseItems(unit)
+			end
+			
+			CastR(unit)
+			if Settings.combo.useW then CastW(unit) end
+			if Settings.combo.useE then CastE(unit) end
+			if Settings.combo.useQ then CastQ(unit) end
 		end
-		
-		CastR(unit)
-		if Settings.combo.useE then CastE(unit) end
-		if Settings.combo.useW then CastW(unit) end
-		if Settings.combo.useQ then CastQ(unit) end
 	end
 end
 
@@ -381,6 +392,7 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "E + W + Q", "W + Q + E" })
 		Settings.combo:addParam("useQ", "Use "..SkillQ.name.." (Q) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
