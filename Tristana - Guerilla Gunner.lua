@@ -1,9 +1,9 @@
-local version = "1.01"
+local version = "1.02"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.01
+		Version: 1.02
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -136,7 +136,7 @@ function OnDraw()
 			DrawCircle(myHero.x, myHero.y, myHero.z, TrueRange(), RGB(Settings.drawing.myColor[2], Settings.drawing.myColor[3], Settings.drawing.myColor[4]))
 		end
 		
-		if Settings.drawing.Target and Target ~= nil then
+		if Settings.drawing.Target and Target ~= nil and Target.type == myHero.type then
 			DrawCircle(Target.x, Target.y, Target.z, 80, ARGB(255, 10, 255, 10))
 		end
 	end
@@ -229,7 +229,7 @@ function LaneClear()
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillW.range, SkillW.width, enemyMinions.objects)
-						if BestPos ~= nil then
+						if BestPos ~= nil and not UnderTurret(BestPos, true) then
 							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_W, BestPos.x, BestPos.z)
 						end
@@ -275,12 +275,12 @@ end
 function CastW(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then		
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
-		
+
 		if AOECastPosition ~= nil and (ComboKey and CountEnemyHeroInRange(SkillW.width, AOECastPosition) > Settings.combo.useWenemies) then return end
-		if MainTargetHitChance >= 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
-			CastSpell(_W, AOECastPosition.x, AOECastPosition.z)
-		end
+			if MainTargetHitChance >= 2 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+				CastSpell(_W, AOECastPosition.x, AOECastPosition.z)
+			end
 	end
 end
 
@@ -390,7 +390,8 @@ function Menu()
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useQ", "Use "..SkillQ.name.." (Q) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:addParam("useWenemies", "Use "..SkillW.name.." (W) Enemies", SCRIPT_PARAM_SLICE, 1, 1, 5, 0)
+		Settings.combo:addParam("useWenemies", "Deny "..SkillW.name.." (W) Enemies", SCRIPT_PARAM_SLICE, 1, 1, 5, 0)
+				
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
