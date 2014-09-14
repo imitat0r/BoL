@@ -12,3 +12,4 @@
 - [Cassiopeia - Deadly Cadence] (http://botoflegends.com/forum/topic/33867-script-w-vpredictions-cassiopeia-deadly-cadence/)
 - [Malzahar - Prophet of the Void] (http://botoflegends.com/forum/topic/34446-script-w-vpredictions-malzahar-prophet-of-the-void/)
 - [Talon - Cutthroat] (http://botoflegends.com/forum/topic/35338-script-w-vpredictions-talon-cutthroat/)
+- [Tristana - Guerilla Gunner] (http://botoflegends.com/forum/topic/35647-script-w-vpredictions-tristana-guerilla-gunner/)
