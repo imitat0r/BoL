@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.02
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -276,6 +276,7 @@ function CastW(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then		
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 		
+		if AOECastPosition ~= nil and (ComboKey and CountEnemyHeroInRange(SkillW.width, AOECastPosition) > Settings.combo.useWenemies) then return end
 		if MainTargetHitChance >= 2 then
 			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 			CastSpell(_W, AOECastPosition.x, AOECastPosition.z)
@@ -389,6 +390,7 @@ function Menu()
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useQ", "Use "..SkillQ.name.." (Q) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
+		Settings.combo:addParam("useWenemies", "Use "..SkillW.name.." (W) Enemies", SCRIPT_PARAM_SLICE, 1, 1, 5, 0)
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
