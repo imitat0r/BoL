@@ -1,9 +1,9 @@
-local version = "1.022"
+local version = "1.03"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.022
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -97,6 +97,7 @@ end
 function OnTick()
 	ComboKey = Settings.combo.comboKey
 	HarassKey = Settings.harass.harassKey
+	HarassToggle = Settings.harass.harassToggle
 	JungleClearKey = Settings.jungle.jungleKey
 	LaneClearKey = Settings.lane.laneKey
 	
@@ -105,6 +106,8 @@ function OnTick()
 	end
 	
 	if HarassKey then
+		Harass(Target)
+	elseif HarassToggle then
 		Harass(Target)
 	end
 	
@@ -172,6 +175,7 @@ end
 
 function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow("Harass") then
+		if Settings.harass.useW then CastW(unit) end
 		if Settings.harass.useQ then CastQ(unit) end
 		if Settings.harass.useE then CastE(unit) end
 	end
@@ -403,10 +407,13 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Harass Settings", "harass")
 		Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
+		Settings.harass:addParam("harassToggle", "Harass Toggle", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("A"))
 		Settings.harass:addParam("useQ", "Use "..SkillQ.name.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
+		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("useE", "Use "..SkillE.name.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("harassMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.harass:permaShow("harassKey")
+		Settings.harass:permaShow("harassToggle")
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Lane Clear Settings", "lane")
 		Settings.lane:addParam("laneKey", "Lane Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
