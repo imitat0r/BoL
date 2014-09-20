@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.04"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.02
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -304,11 +304,11 @@ function KillSteal()
 			local wDmg = getDmg("W", enemy, myHero)
 			local rDmg = getDmg("R", enemy, myHero)
 			
-			if enemy.health <= wDmg and GetDistance(enemy) <= SkillW.range and SkillW.ready then
+			if Settings.ks.useW and enemy.health <= wDmg and GetDistance(enemy) <= SkillW.range and SkillW.ready then
 				CastW(enemy)
-			elseif enemy.health <= rDmg and GetDistance(enemy) <= SkillR.range and SkillR.ready then
+			elseif Settings.ks.useR and enemy.health <= rDmg and GetDistance(enemy) <= SkillR.range and SkillR.ready then
 				CastR(enemy)
-			elseif enemy.health <= rDmg + wDmg and GetDistance(enemy) <= SkillR.range and GetDistance(enemy) <= SkillW.range and SkillR.ready and SkillW.ready then
+			elseif (Settings.ks.useW and Settings.ks.useR) and enemy.health <= rDmg + wDmg and GetDistance(enemy) <= SkillR.range and GetDistance(enemy) <= SkillW.range and SkillR.ready and SkillW.ready then
 				CastW(enemy)
 				CastR(enemy)
 			end
@@ -429,6 +429,8 @@ function Menu()
 		
 	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
 		Settings.ks:addParam("killSteal", "Use Smart Kill Steal", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("useW", "Use "..SkillW.name.." (W) in KillSteal", SCRIPT_PARAM_ONOFF, false)
+		Settings.ks:addParam("useR", "Use "..SkillR.name.." (R) in KillSteal", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:addParam("autoIgnite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:permaShow("killSteal")
 			
@@ -724,7 +726,11 @@ function OnDeleteObj(obj)
 end
 
 function TrueRange()
-	return myHero.range + GetDistance(myHero, myHero.minBBox)
+	if myHero.level > 1 then
+		return (550 + 70) + (myHero.level * 8.5)
+	else
+		return 550
+	end
 end
 
 -- Trees
