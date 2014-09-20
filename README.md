@@ -13,3 +13,4 @@
 - [Malzahar - Prophet of the Void] (http://botoflegends.com/forum/topic/34446-script-w-vpredictions-malzahar-prophet-of-the-void/)
 - [Talon - Cutthroat] (http://botoflegends.com/forum/topic/35338-script-w-vpredictions-talon-cutthroat/)
 - [Tristana - Guerilla Gunner] (http://botoflegends.com/forum/topic/35647-script-w-vpredictions-tristana-guerilla-gunner/)
+- [Aatrox - Blood Prince] (http://botoflegends.com/forum/topic/36185-script-w-vpredictions-aatrox-blood-prince/)
