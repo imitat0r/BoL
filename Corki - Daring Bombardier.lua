@@ -1,9 +1,9 @@
-local version = "1.04"
+local version = "1.05"
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.04
+		Version: 1.05
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -399,7 +399,7 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 7, { "UFO Corki", "Ice Toboggan Corki", "Red Baron Corki", "Hot Rod Corki", "Urfrider Corki", "Dragonwing Corki", "Classic" })
+		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 8, { "UFO", "Ice Toboggan", "Red Baron", "Hot Rod", "Urfrider", "Dragonwing", "Fnatic", "Classic" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
