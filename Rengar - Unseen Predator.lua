@@ -170,7 +170,7 @@ end
 
 function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
-		if Settings.harass.useQ then CastQ(unit) end
+		if Settings.harass.useW then CastW(unit) end
 		if Settings.harass.useE then CastE(unit) end
 	end
 end
