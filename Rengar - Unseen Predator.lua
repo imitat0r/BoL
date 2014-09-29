@@ -1,9 +1,9 @@
-local version = "1.01"
+local version = "1.02"
 
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
-		Version: 1.01
+		Version: 1.02
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -21,7 +21,7 @@ assert(load(Base64Decode("G0x1YVIAAQQEBAgAGZMNChoKAAAAAAAAAAAAAQIDAAAAJQAAAAgAAI
 _G.UseUpdater = true
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
 	["Prodiction"] = "https://bitbucket.org/Klokje/public-klokjes-bol-scripts/raw/ec830facccefb3b52212dba5696c08697c3c2854/Test/Prodiction/Prodiction.lua"
 }
@@ -122,7 +122,11 @@ function OnTick()
 	if Settings.ks.killSteal then
 		KillSteal()
 	end
-
+	
+	if IsMyHealthLow() and not Recall then
+		Heal()
+	end
+	
 	Checks()
 end
 
@@ -193,6 +197,8 @@ function LaneClear()
 					CastSpell(_Q)
 					myHero:Attack(minion)
 				end
+				CastItem(3074)
+				CastItem(3077)
 			end		 
 		end
 	end
@@ -216,16 +222,41 @@ function JungleClear()
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_E, JungleMob.x, JungleMob.z)
 			end
+			CastItem(3074)
+			CastItem(3077)
+		end
+	end
+end
+
+function Heal()
+	if myHero.mana == 5 then
+		enemyMinions:update()
+		
+		for i, minion in pairs(enemyMinions.objects) do
+			if ValidTarget(minion) and minion ~= nil then
+				CastW(minion)
+			end
+		end
+		for _, enemy in ipairs(GetEnemyHeroes()) do
+			if ValidTarget(enemy) and enemy.visible then
+				CastW(enemy)
+			end
 		end
 	end
 end
 
 function CastQ(unit)	
 	if unit ~= nil and SkillQ.ready and GetDistance(unit) <= SkillQ.range then
-		SOWi.Move = false
 		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
 		myHero:Attack(unit)
+	end
+end
+
+function CastW(unit)	
+	if unit ~= nil and SkillW.ready and GetDistance(unit) <= SkillW.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
+		CastSpell(_W)
 	end
 end
 
@@ -249,15 +280,8 @@ function CastE(unit)
 	end
 end
 
-function CastW(unit)	
-	if unit ~= nil and SkillW.ready and GetDistance(unit) <= SkillW.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
-		CastSpell(_W)
-	end
-end
-
 function CastR(unit)
-	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready then
+	if unit ~= nil and GetDistance(unit) <= SkillR.range and GetDistance(unit) > SkillW.range and SkillR.ready then
 		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 		CastSpell(_R)
 	end
@@ -319,14 +343,21 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
-	SOWi:ForceTarget(Target)
-	SOWi.Move = true
+	SxOrb:ForceTarget(Target)
 	
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	if TargetHaveBuff("RengarR", myHero) and TargetHaveBuff("rengarpassivebuff", myHero) then InStealth = true else InStealth = false end
 	
 	Gameover()
+end
+
+function IsMyHealthLow()
+	if myHero.health < (myHero.maxHealth * ( Settings.misc.healW / 100)) then
+		return true
+	else
+		return false
+	end
 end
 
 function Menu()
@@ -383,12 +414,13 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
+		Settings.misc:addParam("healW", "Use "..SkillW.name.." (W) to Heal", SCRIPT_PARAM_SLICE, 25, 0, 100, 0)
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 3, { "Headhunter", "Night Hunter", "Classic" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillR.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Rengar"
@@ -405,13 +437,13 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillE.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SOWi = SOW(VP)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
 	
 	lastSkin = 0
 	InStealth = false
+	Recall = false
 	
 	if GetGame().map.shortName == "twistedTreeline" then
 		TwistedTreeline = true 
@@ -616,6 +648,10 @@ function OnCreateObj(obj)
 			JungleMobs[#JungleMobs+1] = obj
 		end
 	end
+	
+	if obj.name:find("TeleportHome.troy") then
+		Recall = true
+	end
 end
 
 function OnDeleteObj(obj)
@@ -628,6 +664,10 @@ function OnDeleteObj(obj)
 		if obj.name == Mob.name then
 			table.remove(JungleFocusMobs, i)
 		end
+	end
+	
+	if obj.name:find("TeleportHome.troy") then
+		Recall = false
 	end
 end
 
