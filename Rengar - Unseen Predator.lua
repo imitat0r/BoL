@@ -197,8 +197,8 @@ function LaneClear()
 					CastSpell(_Q)
 					myHero:Attack(minion)
 				end
-				CastItem(3074)
-				CastItem(3077)
+				if GetDistance(minion) <= 350 then CastItem(3074) end
+				if GetDistance(minion) <= 350 then CastItem(3077) end
 			end		 
 		end
 	end
@@ -222,8 +222,8 @@ function JungleClear()
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_E, JungleMob.x, JungleMob.z)
 			end
-			CastItem(3074)
-			CastItem(3077)
+			if GetDistance(JungleMob) <= 350 then CastItem(3074) end
+			if GetDistance(JungleMob) <= 350 then CastItem(3077) end
 		end
 	end
 end
