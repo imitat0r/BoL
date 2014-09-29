@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
-		Version: 1.0
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -283,6 +283,10 @@ function KillSteal()
 				CastW(enemy)
 				CastE(enemy)
 			end
+			
+			if Settings.ks.autoIgnite then
+				AutoIgnite(enemy)
+			end
 		end
 	end
 end
@@ -312,10 +316,6 @@ function Checks()
 	end
 	
 	Ignite.ready = (Ignite.slot ~= nil and myHero:CanUseSpell(Ignite.slot) == READY)
-	
-	if Settings.ks.autoIgnite then
-		AutoIgnite(enemy)
-	end
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
@@ -567,6 +567,8 @@ function arrangePrioritysTT()
 end
 
 function UseItems(unit)
+	if InStealth then return end
+	
 	if unit ~= nil then
 		for _, item in pairs(Items) do
 			item.slot = GetInventorySlotItem(item.id)
