@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.03"
 
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
-		Version: 1.02
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -123,7 +123,7 @@ function OnTick()
 		KillSteal()
 	end
 	
-	if IsMyHealthLow() and not Recall then
+	if not (ComboKey or HarassKey) and IsMyHealthLow() and not Recall then
 		Heal()
 	end
 	
