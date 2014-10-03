@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.04"
 
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
-		Version: 1.03
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -245,7 +245,8 @@ function Heal()
 	end
 end
 
-function CastQ(unit)	
+function CastQ(unit)
+	if ComboKey and myHero.mana == 5 and not Settings.combo.empowered.useQempowered then return end
 	if unit ~= nil and SkillQ.ready and GetDistance(unit) <= SkillQ.range then
 		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
@@ -253,7 +254,8 @@ function CastQ(unit)
 	end
 end
 
-function CastW(unit)	
+function CastW(unit)
+	if ComboKey and myHero.mana == 5 and not Settings.combo.empowered.useWempowered then return end
 	if unit ~= nil and SkillW.ready and GetDistance(unit) <= SkillW.range then
 		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 		CastSpell(_W)
@@ -261,10 +263,11 @@ function CastW(unit)
 end
 
 function CastE(unit)
+	if ComboKey and myHero.mana == 5 and not Settings.combo.empowered.useEempowered then return end
 	if unit ~= nil and GetDistance(unit) <= SkillE.range and SkillE.ready then
 		if Settings.misc.prediction == 1 then
 			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
-				
+					
 			if HitChance >= 2 then
 				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 				CastSpell(_E, CastPosition.x, CastPosition.z)
@@ -364,6 +367,11 @@ function Menu()
 	Settings = scriptConfig("Rengar - Unseen Predator "..version.."", "DraconisRengar")
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
+		Settings.combo:addSubMenu("Empowered Settings", "empowered")
+			Settings.combo.empowered:addParam("useQempowered", "Use Empowered "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+			Settings.combo.empowered:addParam("useWempowered", "Use Empowered "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, false)
+			Settings.combo.empowered:addParam("useEempowered", "Use Empowered "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, false)
+			
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
@@ -603,14 +611,11 @@ function UseItems(unit)
 	
 	if unit ~= nil then
 		for _, item in pairs(Items) do
-			item.slot = GetInventorySlotItem(item.id)
-			if item.slot ~= nil then
-				if item.reqTarget and GetDistance(unit) < item.range then
-					CastSpell(item.slot, unit)
-				elseif not item.reqTarget then
-					if (GetDistance(unit) - getHitBoxRadius(myHero) - getHitBoxRadius(unit)) < 50 then
-						CastSpell(item.slot)
-					end
+			if item.reqTarget and GetDistance(unit) < item.range then
+				CastItem(item.id, unit)
+			elseif not item.reqTarget then
+				if (GetDistance(unit) - getHitBoxRadius(myHero) - getHitBoxRadius(unit)) < 50 then
+					CastItem(item.id)
 				end
 			end
 		end
