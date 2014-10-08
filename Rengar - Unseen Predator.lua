@@ -1,4 +1,4 @@
-local version = "1.04"
+local version = "1.041"
 
 --[[
 	Rengar - Unseen Predator
@@ -123,7 +123,7 @@ function OnTick()
 		KillSteal()
 	end
 	
-	if not (ComboKey or HarassKey) and IsMyHealthLow() and not Recall then
+	if not (ComboKey or HarassKey or InStealth) and IsMyHealthLow() and not Recall then
 		Heal()
 	end
 	
