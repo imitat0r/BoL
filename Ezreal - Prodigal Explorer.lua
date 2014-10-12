@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.03"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.02
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -164,7 +164,7 @@ function Combo(unit)
 		if Settings.combo.useR2 then CastR(unit) end
 		CastE(unit)
 		CastQ(unit)
-		CastW(unit)
+		if Settings.combo.useW then CastW(unit) end
 	end
 end
 
@@ -381,6 +381,7 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_LIST, 1, { "To mouse", "Toward enemy", "No"})
 		Settings.combo:addParam("useR2", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
