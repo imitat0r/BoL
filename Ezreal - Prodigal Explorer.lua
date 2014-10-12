@@ -1,9 +1,9 @@
-local version = "1.01"
+local version = "1.02"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.01
+		Version: 1.02
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -100,6 +100,7 @@ end
 function OnTick()
 	ComboKey = Settings.combo.comboKey
 	HarassKey = Settings.harass.harassKey
+	HarassToggle = Settings.harass.harassToggle
 	JungleClearKey = Settings.jungle.jungleKey
 	LaneClearKey = Settings.lane.laneKey
 	
@@ -108,6 +109,8 @@ function OnTick()
 	end
 	
 	if HarassKey then
+		Harass(Target)
+	elseif HarassToggle then
 		Harass(Target)
 	end
 	
@@ -385,6 +388,7 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Harass Settings", "harass")
 		Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
+		Settings.harass:addParam("harassToggle", "Harass Toggle", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("T"))
 		Settings.harass:addParam("useQ", "Use "..SkillQ.name.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("harassMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
@@ -431,7 +435,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, false)
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 8, { "Nottingham", "Striker", "Frosted", "Explorer", "Pulsefire", "TPA", "Debonair", "Classic" })
 
