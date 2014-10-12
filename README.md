@@ -15,3 +15,4 @@
 - [Tristana - Guerilla Gunner] (http://botoflegends.com/forum/topic/35647-script-w-vpredictions-tristana-guerilla-gunner/)
 - [Aatrox - Blood Prince] (http://botoflegends.com/forum/topic/36185-script-w-vpredictions-aatrox-blood-prince/)
 - [Rengar - Unseen Predator] (http://botoflegends.com/forum/topic/36823-script-w-vpredictions-rengar-unseen-predator-team-swagelo/)
+- [Ezreal - Prodigal Explorer] (http://botoflegends.com/forum/topic/38509-script-w-vpredictions-ezreal-prodigal-explorer/)
