@@ -167,6 +167,7 @@ function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow() then
 		if Settings.harass.useQ then CastQ(unit) end
 		if Settings.harass.useW then CastW(unit) end
+		if Settings.harass.useE then CastE(unit) end
 	end
 end
 
@@ -239,7 +240,7 @@ function CastW(unit)
 end
 
 function CastE(unit)
-	if Settings.combo.useE == 1 then return end
+	if ComboKey and Settings.combo.useE == 1 then return end
 	
 	if unit ~= nil and GetDistance(unit) <= SkillE.range and SkillE.ready then
 		if Settings.combo.useE == 2 then
@@ -248,6 +249,9 @@ function CastE(unit)
 				CastSpell(_E, unit)
 			end
 		elseif Settings.combo.useE == 3 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
+			CastSpell(_E, unit)
+		elseif harassKey and (Settings.combo.useE == 2 or Settings.combo.useE == 3) then
 			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 			CastSpell(_E, unit)
 		end
@@ -355,6 +359,7 @@ function Menu()
 		Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
 		Settings.harass:addParam("useQ", "Use "..SkillQ.name.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
+		Settings.harass:addParam("useE", "Use "..SkillE.name.." (E) in Harass", SCRIPT_PARAM_ONOFF, false)
 		Settings.harass:addParam("harassMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.harass:permaShow("harassKey")
 
