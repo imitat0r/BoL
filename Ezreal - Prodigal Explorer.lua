@@ -435,7 +435,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, false)
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 8, { "Nottingham", "Striker", "Frosted", "Explorer", "Pulsefire", "TPA", "Debonair", "Classic" })
 
