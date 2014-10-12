@@ -1,9 +1,9 @@
-local version = "1.15"
+local version = "1.16"
 
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
-		Version: 1.15
+		Version: 1.16
 		Copyright 2014
 			
 	Dependency: Standalone
