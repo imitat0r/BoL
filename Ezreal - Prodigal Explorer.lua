@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.0
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -158,7 +158,7 @@ function Combo(unit)
 			UseItems(unit)
 		end
 		
-		if Settings.combo.useR then CastR(unit) end
+		if Settings.combo.useR2 then CastR(unit) end
 		CastE(unit)
 		CastQ(unit)
 		CastW(unit)
@@ -254,14 +254,31 @@ function CastE(unit)
 end
 
 function CastR(unit)
+	if ComboKey and Settings.combo.useR2 == 1 then return end
 	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready then
 		if Settings.misc.prediction == 1 then
-			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
-				
-			if HitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
-				CastSpell(_R, CastPosition.x, CastPosition.z)
+			local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
+			
+		if MainTargetHitChance >= 2 then
+			if ComboKey then
+				if Settings.combo.useR2 == 2 and nTargets >= 1 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useR2 == 3 and nTargets >= 2 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useR2 == 4 and nTargets >= 3 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useR2 == 5 and nTargets >= 4 then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				end
+			else
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+				CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
 			end
+		end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillR.range, SkillR.speed, SkillR.delay, SkillR.width)
 			
@@ -362,7 +379,7 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_LIST, 1, { "To mouse", "Toward enemy", "No"})
-		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
+		Settings.combo:addParam("useR2", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
 	
