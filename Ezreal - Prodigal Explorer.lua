@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.0
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -280,14 +280,14 @@ function KillSteal()
 			local wDmg = getDmg("W", enemy, myHero)
 			local rDmg = getDmg("R", enemy, myHero)
 			
-			if enemy.health <= qDmg then
+			if Settings.ks.ksQ and enemy.health <= qDmg then
 				CastQ(enemy)
-			elseif enemy.health <= (qDmg + wDmg) and GetDistance(enemy) < SkillW.range then
+			elseif Settings.ks.ksQ and Settings.ks.ksW and enemy.health <= (qDmg + wDmg) and GetDistance(enemy) < SkillW.range then
 				CastW(enemy)
 				CastQ(enemy)
-			elseif enemy.health <= wDmg then
+			elseif Settings.ks.ksW and enemy.health <= wDmg then
 				CastW(enemy)
-			elseif enemy.health <= rDmg then
+			elseif Settings.ks.ksR and enemy.health <= rDmg then
 				CastR(enemy)
 			end
 
@@ -387,6 +387,9 @@ function Menu()
 		
 	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
 		Settings.ks:addParam("killSteal", "Use Smart Kill Steal", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("ksQ", "Use "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("ksW", "Use "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("ksR", "Use "..SkillR.name.." (R)", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:addParam("autoIgnite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:permaShow("killSteal")
 
