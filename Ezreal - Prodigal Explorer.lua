@@ -1,9 +1,9 @@
-local version = "1.05"
+local version = "1.06"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.05
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -276,30 +276,30 @@ end
 
 function CastR(unit)
 	if ComboKey and Settings.combo.useR2 == 1 then return end
-	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready then
+	if unit ~= nil and SkillR.ready then
 		if Settings.misc.prediction == 1 then
 			local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
 			
-		if MainTargetHitChance >= 2 then
-			if ComboKey then
-				if Settings.combo.useR2 == 2 and nTargets >= 1 then
+			if MainTargetHitChance >= 2 then
+				if ComboKey then
+					if Settings.combo.useR2 == 2 and nTargets >= 1 then
+						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+					elseif Settings.combo.useR2 == 3 and nTargets >= 2 then
+						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+					elseif Settings.combo.useR2 == 4 and nTargets >= 3 then
+						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+					elseif Settings.combo.useR2 == 5 and nTargets >= 4 then
+						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
+						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+					end
+				else
 					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
-					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-				elseif Settings.combo.useR2 == 3 and nTargets >= 2 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
-					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-				elseif Settings.combo.useR2 == 4 and nTargets >= 3 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
-					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-				elseif Settings.combo.useR2 == 5 and nTargets >= 4 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
-					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
 				end
-			else
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
-				CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
 			end
-		end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillR.range, SkillR.speed, SkillR.delay, SkillR.width)
 			
@@ -325,7 +325,7 @@ function KillSteal()
 				CastQ(enemy)
 			elseif Settings.ks.ksW and enemy.health <= wDmg then
 				CastW(enemy)
-			elseif Settings.ks.ksR and enemy.health <= rDmg then
+			elseif Settings.ks.ksR and enemy.health <= rDmg and GetDistance(enemy) <= SkillR.range then
 				CastR(enemy)
 			end
 
@@ -370,6 +370,7 @@ function Checks()
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	Gameover()
+	SetRRange()
 end
 
 function IsMyManaLow(mode)
@@ -443,6 +444,7 @@ function Menu()
 		Settings.ks:addParam("ksQ", "Use "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:addParam("ksW", "Use "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:addParam("ksR", "Use "..SkillR.name.." (R)", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("ksRrange", ""..SkillR.name.." (R) Range", SCRIPT_PARAM_SLICE, 20000, 550, 20000, 0)
 		Settings.ks:addParam("sep2", " ", SCRIPT_PARAM_INFO, "")
 		Settings.ks:addParam("autoIgnite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:permaShow("killSteal")
@@ -791,5 +793,11 @@ function Gameover()
 	if GetGame().isOver then
 		UpdateWeb(false, ScriptName, id, HWID)
 		startUp = false;
+	end
+end
+
+function SetRRange()
+	if SkillR.ready then
+		SkillR.range = Settings.ks.ksRrange
 	end
 end
