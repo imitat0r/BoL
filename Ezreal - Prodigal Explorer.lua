@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.04"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.03
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -101,6 +101,7 @@ function OnTick()
 	ComboKey = Settings.combo.comboKey
 	HarassKey = Settings.harass.harassKey
 	HarassToggle = Settings.harass.harassToggle
+	FarmKey = Settings.farm.farmKey
 	JungleClearKey = Settings.jungle.jungleKey
 	LaneClearKey = Settings.lane.laneKey
 	
@@ -112,6 +113,10 @@ function OnTick()
 		Harass(Target)
 	elseif HarassToggle then
 		Harass(Target)
+	end
+	
+	if FarmKey then
+		Farm()
 	end
 	
 	if JungleClearKey then
@@ -172,6 +177,19 @@ function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow("Harass") then
 		if Settings.harass.useQ then CastQ(unit) end
 		if Settings.harass.useW then CastW(unit) end
+	end
+end
+
+function Farm()
+	enemyMinions:update()
+	if FarmKey and not IsMyManaLow("Farm") then
+		for i, minion in pairs(enemyMinions.objects) do
+			if Settings.farm.farmQ then
+				if ValidTarget(minion) and minion ~= nil and myHero:CalcDamage(minion, ((5*(4 * myHero:GetSpellData(0).level + 3)) + myHero.totalDamage + (myHero.ap*0.4))) > VP:GetPredictedHealth(minion, 1, SkillQ.delay  + GetDistance(myHero, minion.visionPos) / SkillQ.speed - GetLatency()/1000) then
+					CastQ(minion)
+				end
+			end
+		end
 	end
 end
 
@@ -373,6 +391,12 @@ function IsMyManaLow(mode)
 		else
 			return false
 		end
+	elseif mode == "Farm" then
+		if myHero.mana < (myHero.maxMana * ( Settings.farm.farmMana / 100)) then
+			return true
+		else
+			return false
+		end
 	end
 end
 
@@ -394,6 +418,12 @@ function Menu()
 		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("harassMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.harass:permaShow("harassKey")
+		
+	Settings:addSubMenu("["..myHero.charName.."] - Farm Settings", "farm")
+		Settings.farm:addParam("farmKey", "Farm Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("X"))
+		Settings.farm:addParam("farmQ", "Farm with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+		Settings.farm:addParam("farmMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
+		Settings.farm:permaShow("farmKey")
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Lane Clear Settings", "lane")
 		Settings.lane:addParam("laneKey", "Lane Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
@@ -456,7 +486,7 @@ function Variables()
 	SkillR = { name = "Trueshot Barrage", range = math.huge, delay = 1.0, speed = 2000, width = 160, ready = false }
 	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
-	enemyMinions = minionManager(MINION_ENEMY, SkillE.range, myHero, MINION_SORT_HEALTH_ASC)
+	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
 	SOWi = SOW(VP)
