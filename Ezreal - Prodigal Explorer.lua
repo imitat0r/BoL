@@ -1,9 +1,9 @@
-local version = "1.04"
+local version = "1.05"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.04
+		Version: 1.05
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -314,7 +314,7 @@ end
 function KillSteal()
 	for _, enemy in ipairs(GetEnemyHeroes()) do
 		if ValidTarget(enemy) and enemy.visible then
-			local qDmg = getDmg("Q", enemy, myHero)
+			local qDmg = myHero:CalcDamage(enemy, ((5*(4 * myHero:GetSpellData(0).level + 3)) + myHero.totalDamage + (myHero.ap*0.4)))
 			local wDmg = getDmg("W", enemy, myHero)
 			local rDmg = getDmg("R", enemy, myHero)
 			
