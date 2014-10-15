@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.01"
 
 --[[
 	Aatrox - Blood Prince
 		Author: Draconis
-		Version: 1.0
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
