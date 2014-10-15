@@ -1,9 +1,9 @@
-local version = "1.08"
+local version = "1.09"
 
 --[[
 	Morgana - Blackthorn Angel
 		Author: Draconis
-		Version: 1.08
+		Version: 1.09
 		Copyright 2014
 			
 	Dependency: Standalone
