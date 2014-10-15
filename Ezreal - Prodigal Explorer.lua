@@ -1,9 +1,9 @@
-local version = "1.06"
+local version = "1.07"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.06
+		Version: 1.07
 		Copyright 2014
 			
 	Dependency: Standalone
