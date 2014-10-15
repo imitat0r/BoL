@@ -1,9 +1,9 @@
-local version = "1.21"
+local version = "1.22"
 
 --[[
 	Evelynn - Widowmaker
 		Author: Draconis
-		Version: 1.21
+		Version: 1.22
 		Copyright 2014
 			
 	Dependency: Standalone
