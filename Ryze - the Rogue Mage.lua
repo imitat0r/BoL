@@ -1,9 +1,9 @@
-local version = "1.18"
+local version = "1.19"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.18
+		Version: 1.19
 		Copyright 2014
 			
 	Dependency: Standalone
