@@ -1,9 +1,9 @@
-local version = "1.05"
+local version = "1.06"
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.05
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
