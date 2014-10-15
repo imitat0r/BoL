@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.04"
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.03
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
