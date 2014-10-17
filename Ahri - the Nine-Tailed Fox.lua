@@ -1,9 +1,9 @@
-local version = "1.168"
+local version = "1.17"
 
 --[[
 	Ahri - the Nine-Tailed Fox
 		Author: Draconis
-		Version: 1.168
+		Version: 1.17
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -146,16 +146,20 @@ function Combo(unit)
 			UseItems(unit)
 		end
 		
-		if Settings.combo.useR then CastR(unit) end
-		CastE(unit)
-		CastQ(unit)
-		CastW(unit)
-	end
+		if Settings.combo.comboMode == 1 then
+			if Settings.combo.useR then CastR(unit) end
+			CastE(unit)
+			CastQ(unit)
+			CastW(unit)
+		else
+			CastE(unit)
+			CastQ(unit)
+			CastW(unit)
+		end
 	
-	if not Settings.combo.useAA then
-		SOWi:DisableAttacks()
-	elseif Settings.combo.useAA then
-		SOWi:EnableAttacks()
+		if not Settings.combo.useAA then
+			SOWi:DisableAttacks()
+		end
 	end
 end
 
@@ -163,6 +167,7 @@ function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow() then
 		if Settings.harass.useQ then CastQ(unit) end
 		if Settings.harass.useE then CastE(unit) end
+		if Settings.harass.useW then CastW(unit) end
 	end
 end
 
@@ -343,7 +348,9 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
+	
 	SOWi:ForceTarget(Target)
+	SOWi:EnableAttacks()
 	
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
@@ -362,6 +369,7 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "REQW", "EQW"})
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 1, { "To mouse", "Toward enemy", "Don't use"})
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useAA", "Use AAs in Combo", SCRIPT_PARAM_ONOFF, true)
@@ -370,6 +378,7 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Harass Settings", "harass")
 		Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
 		Settings.harass:addParam("useQ", "Use "..SkillQ.name.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
+		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, false)
 		Settings.harass:addParam("useE", "Use "..SkillE.name.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("harassMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.harass:permaShow("harassKey")
