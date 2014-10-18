@@ -9,7 +9,6 @@
 | Irelia     | Working   | [Link](http://botoflegends.com/forum/topic/29302-script-w-vpredictions-irelia-hiten-style/) |
 | Morgana    | Working   | [Link](http://botoflegends.com/forum/topic/30684-script-w-vpredictions-morgana-blackthorn-angel/) |
 | Shyvana    | Working   | [Link](http://botoflegends.com/forum/topic/32119-script-w-vpredictions-shyvana-flame-breath/) |
-| Viktor     | Abandoned | [Link](http://botoflegends.com/forum/topic/33175-script-w-vpredictions-viktor-machine-herald/) |
 | Corki      | Working   | [Link](http://botoflegends.com/forum/topic/33639-script-w-vpredictions-corki-daring-bombardier/) |
 | Cassiopeia | Working   | [Link](http://botoflegends.com/forum/topic/33867-script-w-vpredictions-cassiopeia-deadly-cadence/) |
 | Malzahar   | Working   | [Link](http://botoflegends.com/forum/topic/34446-script-w-vpredictions-malzahar-prophet-of-the-void/) |
@@ -18,3 +17,4 @@
 | Aatrox     | Working   | [Link](http://botoflegends.com/forum/topic/36185-script-w-vpredictions-aatrox-blood-prince/) |
 | Rengar     | Working   | [Link](http://botoflegends.com/forum/topic/36823-script-w-vpredictions-rengar-unseen-predator-team-swagelo/) |
 | Ezreal     | Working   | [Link](http://botoflegends.com/forum/topic/38509-script-w-vpredictions-ezreal-prodigal-explorer/) |
+| Sion       | Exploit   | [Link](http://botoflegends.com/forum/topic/39140-exploit-sions-ultimate-control/) |
