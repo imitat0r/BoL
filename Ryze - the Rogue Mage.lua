@@ -1,9 +1,9 @@
-local version = "1.19"
+local version = "1.20"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.19
+		Version: 1.20
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -360,6 +360,12 @@ function Checks()
 	
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
+	
+	if Settings.combo.comboSwitch and Settings.combo.comboMode == 1 then
+		Settings.combo.comboMode = 2
+	elseif not Settings.combo.comboSwitch and Settings.combo.comboMode == 2 then
+		Settings.combo.comboMode = 1
+	end
 end
 
 function IsMyManaLow(mode)
@@ -383,11 +389,13 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+		Settings.combo:addParam("comboSwitch", "Combo Switch", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("A"))
 		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "Burst", "Long" })
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 1, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useAA", "Use AAs in Combo", SCRIPT_PARAM_ONOFF, false)
 		Settings.combo:permaShow("comboKey")
+		Settings.combo:permaShow("comboMode")
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Harass Settings", "harass")
 		Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
