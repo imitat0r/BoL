@@ -1,9 +1,9 @@
-local version = "1.05"
+local version = "1.051"
 
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
-		Version: 1.05
+		Version: 1.051
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -107,7 +107,7 @@ function OnTick()
 		KillSteal()
 	end
 	
-	if not (ComboKey or HarassKey or InStealth) and IsMyHealthLow() and not Recall then
+	if not (ComboKey or HarassKey) and IsMyHealthLow() and not Recall then
 		Heal()
 	end
 	
@@ -146,13 +146,9 @@ function Combo(unit)
 			UseItems(unit)
 		end
 		
-		if Settings.combo.useR then CastR(unit) end
-		
-		if not InStealth then
-			CastE(unit)
-			if Settings.combo.useW then CastW(unit) end
-			CastQ(unit)
-		end
+		CastE(unit)
+		if Settings.combo.useW then CastW(unit) end
+		CastQ(unit)
 	end
 end
 
@@ -267,13 +263,6 @@ function CastE(unit)
 	end
 end
 
-function CastR(unit)
-	if unit ~= nil and GetDistance(unit) <= SkillR.range and GetDistance(unit) > SkillW.range and SkillR.ready then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
-		CastSpell(_R)
-	end
-end
-
 function KillSteal()
 	for _, enemy in ipairs(GetEnemyHeroes()) do
 		if ValidTarget(enemy) and enemy.visible then
@@ -334,7 +323,6 @@ function Checks()
 	
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
-	if TargetHaveBuff("RengarR", myHero) and TargetHaveBuff("rengarpassivebuff", myHero) then InStealth = true else InStealth = false end
 end
 
 function IsMyHealthLow()
@@ -356,7 +344,6 @@ function Menu()
 			
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
 	
@@ -432,7 +419,6 @@ function Variables()
 	JungleFocusMobs = {}
 	
 	lastSkin = 0
-	InStealth = false
 	Recall = false
 	
 	if GetGame().map.shortName == "twistedTreeline" then
@@ -589,8 +575,6 @@ function arrangePrioritysTT()
 end
 
 function UseItems(unit)
-	if InStealth then return end
-	
 	if unit ~= nil then
 		for _, item in pairs(Items) do
 			if item.reqTarget and GetDistance(unit) < item.range then
