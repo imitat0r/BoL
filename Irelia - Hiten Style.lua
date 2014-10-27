@@ -1,3 +1,5 @@
+local version = "1.18"
+
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
