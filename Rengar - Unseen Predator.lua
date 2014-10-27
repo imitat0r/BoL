@@ -1,3 +1,5 @@
+local version = "1.06"
+
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
@@ -84,31 +86,31 @@ function OnTick()
 	HarassKey = Settings.harass.harassKey
 	JungleClearKey = Settings.jungle.jungleKey
 	LaneClearKey = Settings.lane.laneKey
-	
+
 	if ComboKey then
 		Combo(Target)
 	end
-	
+
 	if HarassKey then
 		Harass(Target)
 	end
-	
+
 	if JungleClearKey then
 		JungleClear()
 	end
-	
+
 	if LaneClearKey then
 		LaneClear()
 	end
-	
+
 	if Settings.ks.killSteal then
 		KillSteal()
 	end
-	
+
 	if not (ComboKey or HarassKey) and IsMyHealthLow() and not Recall then
 		Heal()
 	end
-	
+
 	Checks()
 end
 
@@ -120,14 +122,11 @@ function OnDraw()
 		if SkillE.ready and Settings.drawing.eDraw then 
 			DrawCircle(myHero.x, myHero.y, myHero.z, SkillE.range, RGB(Settings.drawing.eColor[2], Settings.drawing.eColor[3], Settings.drawing.eColor[4]))
 		end
-		if SkillR.ready and Settings.drawing.rDraw then 
-			DrawCircle(myHero.x, myHero.y, myHero.z, SkillR.range, RGB(Settings.drawing.rColor[2], Settings.drawing.rColor[3], Settings.drawing.rColor[4]))
-		end
-		
+
 		if Settings.drawing.myHero then
 			DrawCircle(myHero.x, myHero.y, myHero.z, TrueRange(), RGB(Settings.drawing.myColor[2], Settings.drawing.myColor[3], Settings.drawing.myColor[4]))
 		end
-		
+
 		if Settings.drawing.Target and Target ~= nil then
 			DrawCircle(Target.x, Target.y, Target.z, 80, ARGB(255, 10, 255, 10))
 		end
@@ -143,7 +142,7 @@ function Combo(unit)
 		if Settings.combo.comboItems then
 			UseItems(unit)
 		end
-		
+
 		CastE(unit)
 		if Settings.combo.useW then CastW(unit) end
 		CastQ(unit)
@@ -160,7 +159,7 @@ end
 function LaneClear()
 	enemyMinions:update()
 	if LaneClearKey then
-		for i, minion in pairs(enemyMinions.objects) do
+		for _, minion in pairs(enemyMinions.objects) do
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
 					CastSpell(_W)
@@ -182,7 +181,7 @@ end
 function JungleClear()
 	if Settings.jungle.jungleKey then
 		local JungleMob = GetJungleMob()
-		
+
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
 				CastSpell(_Q)
@@ -203,8 +202,8 @@ end
 function Heal()
 	if myHero.mana == 5 then
 		enemyMinions:update()
-		
-		for i, minion in pairs(enemyMinions.objects) do
+
+		for _, minion in pairs(enemyMinions.objects) do
 			if ValidTarget(minion) and minion ~= nil then
 				CastW(minion)
 			end
@@ -235,18 +234,10 @@ end
 function CastE(unit)
 	if ComboKey and myHero.mana == 5 and not Settings.combo.empowered.useEempowered then return end
 	if unit ~= nil and GetDistance(unit) <= SkillE.range and SkillE.ready then
-		if Settings.misc.prediction == 1 then
-			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
-					
-			if HitChance >= 2 then
-				CastSpell(_E, CastPosition.x, CastPosition.z)
-			end
-		elseif Settings.misc.prediction == 2 and VIP_USER then
-			local pos, info = Prodiction.GetPrediction(unit, SkillE.range, SkillE.speed, SkillE.delay, SkillE.width)
-			
-			if pos ~= nil and not info.mCollision() then
-				CastSpell(_E, pos.x, pos.z)
-			end
+		local CastPosition,	HitChance,	Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
+
+		if HitChance >= 2 then
+			CastSpell(_E, CastPosition.x, CastPosition.z)
 		end
 	end
 end
@@ -257,7 +248,7 @@ function KillSteal()
 			local qDmg = getDmg("Q", enemy, myHero)
 			local wDmg = getDmg("W", enemy, myHero)
 			local eDmg = getDmg("E", enemy, myHero)
-			
+
 			if enemy.health <= qDmg then
 				CastQ(enemy)
 			elseif enemy.health <= eDmg then
@@ -271,7 +262,7 @@ function KillSteal()
 				CastW(enemy)
 				CastE(enemy)
 			end
-			
+
 			if Settings.ks.autoIgnite then
 				AutoIgnite(enemy)
 			end
@@ -295,20 +286,19 @@ function Checks()
 	SkillQ.ready = (myHero:CanUseSpell(_Q) == READY)
 	SkillW.ready = (myHero:CanUseSpell(_W) == READY)
 	SkillE.ready = (myHero:CanUseSpell(_E) == READY)
-	SkillR.ready = (myHero:CanUseSpell(_R) == READY)
-	
+
 	if myHero:GetSpellData(SUMMONER_1).name:find(Ignite.name) then
 		Ignite.slot = SUMMONER_1
 	elseif myHero:GetSpellData(SUMMONER_2).name:find(Ignite.name) then
 		Ignite.slot = SUMMONER_2
 	end
-	
+
 	Ignite.ready = (Ignite.slot ~= nil and myHero:CanUseSpell(Ignite.slot) == READY)
-	
+
 	TargetSelector:update()
 	Target = GetCustomTarget()
 	SxOrb:ForceTarget(Target)
-	
+
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
@@ -323,70 +313,67 @@ end
 
 function Menu()
 	Settings = scriptConfig("Rengar - Unseen Predator "..version.."", "DraconisRengar")
-	
-	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
-		Settings.combo:addSubMenu("Empowered Settings", "empowered")
-			Settings.combo.empowered:addParam("useQempowered", "Use Empowered "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
-			Settings.combo.empowered:addParam("useWempowered", "Use Empowered "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, false)
-			Settings.combo.empowered:addParam("useEempowered", "Use Empowered "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, false)
-			
-		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
-		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:permaShow("comboKey")
-	
-	Settings:addSubMenu("["..myHero.charName.."] - Harass Settings", "harass")
-		Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
-		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
-		Settings.harass:addParam("useE", "Use "..SkillE.name.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
-		Settings.harass:permaShow("harassKey")
-		
-	Settings:addSubMenu("["..myHero.charName.."] - Lane Clear Settings", "lane")
-		Settings.lane:addParam("laneKey", "Lane Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
-		Settings.lane:addParam("laneQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
-		Settings.lane:addParam("laneW", "Clear with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
-		Settings.lane:addParam("laneE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
-		Settings.lane:permaShow("laneKey")
-		
-	Settings:addSubMenu("["..myHero.charName.."] - Jungle Clear Settings", "jungle")
-		Settings.jungle:addParam("jungleKey", "Jungle Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
-		Settings.jungle:addParam("jungleQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
-		Settings.jungle:addParam("jungleW", "Clear with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
-		Settings.jungle:addParam("jungleE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
-		Settings.jungle:permaShow("jungleKey")
-		
-	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
-		Settings.ks:addParam("killSteal", "Use Smart Kill Steal", SCRIPT_PARAM_ONOFF, true)
-		Settings.ks:addParam("autoIgnite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
-		Settings.ks:permaShow("killSteal")
-			
-	Settings:addSubMenu("["..myHero.charName.."] - Draw Settings", "drawing")	
-		Settings.drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
-		Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
-		Settings.drawing:addParam("wDraw", "Draw "..SkillW.name.." (W) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
-		Settings.drawing:addParam("eDraw", "Draw "..SkillE.name.." (E) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
-		Settings.drawing:addParam("rDraw", "Draw "..SkillR.name.." (R) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
-		
-		Settings.drawing:addSubMenu("Lag Free Circles", "lfc")	
-			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
-			Settings.drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
-			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
-	
-	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("healW", "Use "..SkillW.name.." (W) to Heal", SCRIPT_PARAM_SLICE, 25, 0, 100, 0)
-		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 3, { "Headhunter", "Night Hunter", "Classic" })
 
-	
+	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
+	Settings.combo:addSubMenu("Empowered Settings", "empowered")
+	Settings.combo.empowered:addParam("useQempowered", "Use Empowered "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+	Settings.combo.empowered:addParam("useWempowered", "Use Empowered "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, false)
+	Settings.combo.empowered:addParam("useEempowered", "Use Empowered "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, false)
+
+	Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+	Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
+	Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
+	Settings.combo:permaShow("comboKey")
+
+	Settings:addSubMenu("["..myHero.charName.."] - Harass Settings", "harass")
+	Settings.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("C"))
+	Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
+	Settings.harass:addParam("useE", "Use "..SkillE.name.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
+	Settings.harass:permaShow("harassKey")
+
+	Settings:addSubMenu("["..myHero.charName.."] - Lane Clear Settings", "lane")
+	Settings.lane:addParam("laneKey", "Lane Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
+	Settings.lane:addParam("laneQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+	Settings.lane:addParam("laneW", "Clear with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
+	Settings.lane:addParam("laneE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
+	Settings.lane:permaShow("laneKey")
+
+	Settings:addSubMenu("["..myHero.charName.."] - Jungle Clear Settings", "jungle")
+	Settings.jungle:addParam("jungleKey", "Jungle Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
+	Settings.jungle:addParam("jungleQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+	Settings.jungle:addParam("jungleW", "Clear with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
+	Settings.jungle:addParam("jungleE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
+	Settings.jungle:permaShow("jungleKey")
+
+	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
+	Settings.ks:addParam("killSteal", "Use Smart Kill Steal", SCRIPT_PARAM_ONOFF, true)
+	Settings.ks:addParam("autoIgnite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
+	Settings.ks:permaShow("killSteal")
+
+	Settings:addSubMenu("["..myHero.charName.."] - Draw Settings", "drawing")	
+	Settings.drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
+	Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
+	Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
+	Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+	Settings.drawing:addParam("wDraw", "Draw "..SkillW.name.." (W) Range", SCRIPT_PARAM_ONOFF, true)
+	Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+	Settings.drawing:addParam("eDraw", "Draw "..SkillE.name.." (E) Range", SCRIPT_PARAM_ONOFF, true)
+	Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+
+	Settings.drawing:addSubMenu("Lag Free Circles", "lfc")	
+	Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
+	Settings.drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
+	Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
+
+	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
+	Settings.misc:addParam("healW", "Use "..SkillW.name.." (W) to Heal", SCRIPT_PARAM_SLICE, 25, 0, 100, 0)
+	Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 3, { "Headhunter", "Night Hunter", "Classic" })
+
+
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SxOrb:LoadToMenu(Settings.Orbwalking)
-	
-	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillR.range, DAMAGE_PHYSICAL, true)
+	SxOrb:LoadToMenu(Settings.Orbwalking)
+
+	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillE.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Rengar"
 	Settings:addTS(TargetSelector)
 end
@@ -397,51 +384,51 @@ function Variables()
 	SkillE = { name = "Bola Strike", range = 1000, delay = 0.25, speed = 1500, width = 70, ready = false }
 	SkillR = { name = "Thrill of the Hunt", range = 2000, delay = nil, speed = nil, width = nil, ready = false }
 	Ignite = { name = "summonerdot", range = 600, slot = nil }
-	
+
 	enemyMinions = minionManager(MINION_ENEMY, SkillE.range, myHero, MINION_SORT_HEALTH_ASC)
-	
+
 	VP = VPrediction()
-	
+
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
+
 	lastSkin = 0
 	Recall = false
-	
+
 	if GetGame().map.shortName == "twistedTreeline" then
 		TwistedTreeline = true 
 	else
 		TwistedTreeline = false
 	end
-	
+
 	_G.oldDrawCircle = rawget(_G, 'DrawCircle')
 	_G.DrawCircle = DrawCircle2	
-	
+
 	priorityTable = {
-			AP = {
-				"Annie", "Ahri", "Akali", "Anivia", "Annie", "Brand", "Cassiopeia", "Diana", "Evelynn", "FiddleSticks", "Fizz", "Gragas", "Heimerdinger", "Karthus",
-				"Kassadin", "Katarina", "Kayle", "Kennen", "Leblanc", "Lissandra", "Lux", "Malzahar", "Mordekaiser", "Morgana", "Nidalee", "Orianna",
-				"Ryze", "Sion", "Swain", "Syndra", "Teemo", "TwistedFate", "Veigar", "Viktor", "Vladimir", "Xerath", "Ziggs", "Zyra", "Velkoz"
-			},
-			
-			Support = {
-				"Alistar", "Blitzcrank", "Janna", "Karma", "Leona", "Lulu", "Nami", "Nunu", "Sona", "Soraka", "Taric", "Thresh", "Zilean", "Braum"
-			},
-			
-			Tank = {
-				"Amumu", "Chogath", "DrMundo", "Galio", "Hecarim", "Malphite", "Maokai", "Nasus", "Rammus", "Sejuani", "Nautilus", "Shen", "Singed", "Skarner", "Volibear",
-				"Warwick", "Yorick", "Zac"
-			},
-			
-			AD_Carry = {
-				"Ashe", "Caitlyn", "Corki", "Draven", "Ezreal", "Graves", "Jayce", "Jinx", "KogMaw", "Lucian", "MasterYi", "MissFortune", "Pantheon", "Quinn", "Shaco", "Sivir",
-				"Talon","Tryndamere", "Tristana", "Twitch", "Urgot", "Varus", "Vayne", "Yasuo", "Zed"
-			},
-			
-			Bruiser = {
-				"Aatrox", "Darius", "Elise", "Fiora", "Gangplank", "Garen", "Irelia", "JarvanIV", "Jax", "Khazix", "LeeSin", "Nocturne", "Olaf", "Poppy",
-				"Renekton", "Rengar", "Riven", "Rumble", "Shyvana", "Trundle", "Udyr", "Vi", "MonkeyKing", "XinZhao"
-			}
+		AP = {
+			"Annie", "Ahri", "Akali", "Anivia", "Annie", "Brand", "Cassiopeia", "Diana", "Evelynn", "FiddleSticks", "Fizz", "Gragas", "Heimerdinger", "Karthus",
+			"Kassadin", "Katarina", "Kayle", "Kennen", "Leblanc", "Lissandra", "Lux", "Malzahar", "Mordekaiser", "Morgana", "Nidalee", "Orianna",
+			"Ryze", "Sion", "Swain", "Syndra", "Teemo", "TwistedFate", "Veigar", "Viktor", "Vladimir", "Xerath", "Ziggs", "Zyra", "Velkoz"
+		},
+
+		Support = {
+			"Alistar", "Blitzcrank", "Janna", "Karma", "Leona", "Lulu", "Nami", "Nunu", "Sona", "Soraka", "Taric", "Thresh", "Zilean", "Braum"
+		},
+
+		Tank = {
+			"Amumu", "Chogath", "DrMundo", "Galio", "Hecarim", "Malphite", "Maokai", "Nasus", "Rammus", "Sejuani", "Nautilus", "Shen", "Singed", "Skarner", "Volibear",
+			"Warwick", "Yorick", "Zac"
+		},
+
+		AD_Carry = {
+			"Ashe", "Caitlyn", "Corki", "Draven", "Ezreal", "Graves", "Jayce", "Jinx", "KogMaw", "Lucian", "MasterYi", "MissFortune", "Pantheon", "Quinn", "Shaco", "Sivir",
+			"Talon","Tryndamere", "Tristana", "Twitch", "Urgot", "Varus", "Vayne", "Yasuo", "Zed"
+		},
+
+		Bruiser = {
+			"Aatrox", "Darius", "Elise", "Fiora", "Gangplank", "Garen", "Irelia", "JarvanIV", "Jax", "Khazix", "LeeSin", "Nocturne", "Olaf", "Poppy",
+			"Renekton", "Rengar", "Riven", "Rumble", "Shyvana", "Trundle", "Udyr", "Vi", "MonkeyKing", "XinZhao"
+		}
 	}
 
 	Items = {
@@ -456,7 +443,7 @@ function Variables()
 		BFT = { id = 3188, range = 750, reqTarget = true, slot = nil },
 		RND = { id = 3143, range = 275, reqTarget = false, slot = nil }
 	}
-	
+
 	if not TwistedTreeline then
 		JungleMobNames = { 
 			["Wolf8.1.2"]			= true,
@@ -480,7 +467,7 @@ function Variables()
 			["YoungLizard4.1.3"]	= true,
 			["SmallGolem5.1.1"]		= true
 		}
-		
+
 		FocusJungleNames = {
 			["Dragon6.1.1"]			= true,
 			["Worm12.1.1"]			= true,
@@ -520,7 +507,7 @@ function Variables()
 			["TT_NWolf26.1.3"]			= true
 		}
 	end
-		
+
 	for i = 0, objManager.maxObjects do
 		local object = objManager:getObject(i)
 		if object and object.valid and not object.dead then
@@ -540,25 +527,25 @@ function SetPriority(table, hero, priority)
 		end
 	end
 end
- 
+
 function arrangePrioritys()
-		for i, enemy in ipairs(GetEnemyHeroes()) do
+	for i, enemy in ipairs(GetEnemyHeroes()) do
 		SetPriority(priorityTable.AD_Carry, enemy, 1)
-		SetPriority(priorityTable.AP,	   enemy, 2)
-		SetPriority(priorityTable.Support,  enemy, 3)
-		SetPriority(priorityTable.Bruiser,  enemy, 4)
+		SetPriority(priorityTable.AP,		 enemy, 2)
+		SetPriority(priorityTable.Support,	enemy, 3)
+		SetPriority(priorityTable.Bruiser,	enemy, 4)
 		SetPriority(priorityTable.Tank,	 enemy, 5)
-		end
+	end
 end
 
 function arrangePrioritysTT()
-        for i, enemy in ipairs(GetEnemyHeroes()) do
+	for i, enemy in ipairs(GetEnemyHeroes()) do
 		SetPriority(priorityTable.AD_Carry, enemy, 1)
-		SetPriority(priorityTable.AP,       enemy, 1)
-		SetPriority(priorityTable.Support,  enemy, 2)
-		SetPriority(priorityTable.Bruiser,  enemy, 2)
-		SetPriority(priorityTable.Tank,     enemy, 3)
-        end
+		SetPriority(priorityTable.AP,			 enemy, 1)
+		SetPriority(priorityTable.Support,	enemy, 2)
+		SetPriority(priorityTable.Bruiser,	enemy, 2)
+		SetPriority(priorityTable.Tank,		 enemy, 3)
+	end
 end
 
 function UseItems(unit)
@@ -584,7 +571,7 @@ function PriorityOnLoad()
 		print("<b><font color=\"#6699FF\">Rengar - Unseen Predator:</font></b> <font color=\"#FFFFFF\">Too few champions to arrange priority.</font>")
 	elseif heroManager.iCount == 6 then
 		arrangePrioritysTT()
-    else
+	else
 		arrangePrioritys()
 	end
 end
@@ -606,7 +593,7 @@ function OnCreateObj(obj)
 			JungleMobs[#JungleMobs+1] = obj
 		end
 	end
-	
+
 	if obj.name:find("TeleportHome.troy") then
 		Recall = true
 	end
@@ -623,7 +610,7 @@ function OnDeleteObj(obj)
 			table.remove(JungleFocusMobs, i)
 		end
 	end
-	
+
 	if obj.name:find("TeleportHome.troy") then
 		Recall = false
 	end
@@ -635,7 +622,7 @@ end
 
 -- Trees
 function GetCustomTarget()
- 	TargetSelector:update() 	
+	TargetSelector:update() 	
 	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
 	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
 	return TargetSelector.target
@@ -674,58 +661,58 @@ function ChooseSkin()
 end
 
 function GetBestCircularFarmPosition(range, radius, objects)
-    local BestPos 
-    local BestHit = 0
-    for i, object in ipairs(objects) do
-        local hit = CountObjectsNearPos(object.visionPos or object, range, radius, objects)
-        if hit > BestHit then
-            BestHit = hit
-            BestPos = Vector(object)
-            if BestHit == #objects then
-               break
-            end
-         end
-    end
-    return BestPos, BestHit
+	local BestPos 
+	local BestHit = 0
+	for i, object in ipairs(objects) do
+		local hit = CountObjectsNearPos(object.visionPos or object, range, radius, objects)
+		if hit > BestHit then
+			BestHit = hit
+			BestPos = Vector(object)
+			if BestHit == #objects then
+				break
+			end
+		end
+	end
+	return BestPos, BestHit
 end
 
 function CountObjectsNearPos(pos, range, radius, objects)
-    local n = 0
-    for i, object in ipairs(objects) do
-        if GetDistance(pos, object) <= radius then
-            n = n + 1
-        end
-    end
-    return n
+	local n = 0
+	for i, object in ipairs(objects) do
+		if GetDistance(pos, object) <= radius then
+			n = n + 1
+		end
+	end
+	return n
 end
 
 -- Barasia, vadash, viseversa
 function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
-  radius = radius or 300
-  quality = math.max(8,round(180/math.deg((math.asin((chordlength/(2*radius)))))))
-  quality = 2 * math.pi / quality
-  radius = radius*.92
-  
-  local points = {}
-  for theta = 0, 2 * math.pi + quality, quality do
-    local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-    points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-  end
-  
-  DrawLines2(points, width or 1, color or 4294967295)
+	radius = radius or 300
+	quality = math.max(8,round(180/math.deg((math.asin((chordlength/(2*radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius*.92
+
+	local points = {}
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+
+	DrawLines2(points, width or 1, color or 4294967295)
 end
 
 function round(num) 
-  if num >= 0 then return math.floor(num+.5) else return math.ceil(num-.5) end
+	if num >= 0 then return math.floor(num+.5) else return math.ceil(num-.5) end
 end
 
 function DrawCircle2(x, y, z, radius, color)
-  local vPos1 = Vector(x, y, z)
-  local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-  local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-  local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-  
-  if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
-    DrawCircleNextLvl(x, y, z, radius, Settings.drawing.lfc.Width, color, Settings.drawing.lfc.CL) 
-  end
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
+		DrawCircleNextLvl(x, y, z, radius, Settings.drawing.lfc.Width, color, Settings.drawing.lfc.CL) 
+	end
 end
