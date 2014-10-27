@@ -1,3 +1,5 @@
+local version = "1.23"
+
 --[[
 	Evelynn - Widowmaker
 		Author: Draconis
