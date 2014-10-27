@@ -1,3 +1,5 @@
+local version = "1.02"
+
 --[[
 	Malzahar - Prophet of the Void
 		Author: Draconis
