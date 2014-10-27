@@ -1,3 +1,5 @@
+local version = "1.21"
+
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
