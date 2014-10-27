@@ -1,3 +1,5 @@
+local version = "1.05"
+
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
