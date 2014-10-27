@@ -1,9 +1,7 @@
-local version = "1.051"
-
 --[[
 	Rengar - Unseen Predator
 		Author: Draconis & Team #SWAGelo
-		Version: 1.051
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -165,15 +163,12 @@ function LaneClear()
 		for i, minion in pairs(enemyMinions.objects) do
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 					CastSpell(_W)
 				end
 				if Settings.lane.laneE and GetDistance(minion) <= SkillE.range and SkillE.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = minion.x, toY = minion.z, fromX = minion.x, fromY = minion.z }):send() end
 					CastSpell(_E, minion.x, minion.z)
 				end
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 					CastSpell(_Q)
 					myHero:Attack(minion)
 				end
@@ -190,16 +185,13 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 				CastSpell(_Q)
 				myHero:Attack(JungleMob)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 				CastSpell(_W)
 			end
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_E, JungleMob.x, JungleMob.z)
 			end
 			if GetDistance(JungleMob) <= 350 then CastItem(3074) end
@@ -228,7 +220,6 @@ end
 function CastQ(unit)
 	if ComboKey and myHero.mana == 5 and not Settings.combo.empowered.useQempowered then return end
 	if unit ~= nil and SkillQ.ready and GetDistance(unit) <= SkillQ.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
 		myHero:Attack(unit)
 	end
@@ -237,7 +228,6 @@ end
 function CastW(unit)
 	if ComboKey and myHero.mana == 5 and not Settings.combo.empowered.useWempowered then return end
 	if unit ~= nil and SkillW.ready and GetDistance(unit) <= SkillW.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 		CastSpell(_W)
 	end
 end
@@ -249,14 +239,12 @@ function CastE(unit)
 			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
 					
 			if HitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 				CastSpell(_E, CastPosition.x, CastPosition.z)
 			end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillE.range, SkillE.speed, SkillE.delay, SkillE.width)
 			
 			if pos ~= nil and not info.mCollision() then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z }):send() end
 				CastSpell(_E, pos.x, pos.z)
 			end
 		end
@@ -390,7 +378,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("healW", "Use "..SkillW.name.." (W) to Heal", SCRIPT_PARAM_SLICE, 25, 0, 100, 0)
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 3, { "Headhunter", "Night Hunter", "Classic" })

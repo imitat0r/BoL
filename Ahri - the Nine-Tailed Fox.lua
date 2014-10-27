@@ -1,9 +1,7 @@
-local version = "1.18"
-
 --[[
 	Ahri - the Nine-Tailed Fox
 		Author: Draconis
-		Version: 1.18
+		Version: 1.19
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -179,12 +177,10 @@ function LaneClear()
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
 					local BestPos, BestHit = GetBestLineFarmPosition(SkillQ.range, SkillQ.width, enemyMinions.objects)
 						if BestPos ~= nil then
-							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_Q, BestPos.x, BestPos.z)
 						end
 				end
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 					CastSpell(_W)
 				end
 			end		 
@@ -198,11 +194,9 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_Q, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 				CastSpell(_W)
 			end
 		end
@@ -215,14 +209,12 @@ function CastQ(unit)
 			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
 					
 			if HitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 				CastSpell(_Q, CastPosition.x, CastPosition.z)
 			end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillQ.range, SkillQ.speed, SkillQ.delay, SkillQ.width)
 			
 			if pos ~= nil then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z }):send() end
 				CastSpell(_Q, pos.x, pos.z)
 			end
 		end
@@ -235,14 +227,12 @@ function CastE(unit)
 			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
 				
 			if HitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 				CastSpell(_E, CastPosition.x, CastPosition.z)
 			end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillE.range, SkillE.speed, SkillE.delay, SkillE.width)
 			
 			if pos ~= nil and not info.mCollision() then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z }):send() end
 				CastSpell(_E, pos.x, pos.z)
 			end
 		end
@@ -251,7 +241,6 @@ end
 
 function CastW(unit)	
 	if unit ~= nil and SkillW.ready and GetDistance(unit) <= SkillW.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 		CastSpell(_W)
 	end
 end
@@ -260,10 +249,8 @@ function CastR(unit)
 	if unit ~= nil then
 		if SkillR.ready and GetDistance(unit) <= SkillQ.range and Settings.combo.useR == 1 then
 			local Mouse = Vector(myHero) + 400 * (Vector(mousePos) - Vector(myHero)):normalized()
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = Mouse.x, toY = Mouse.z, fromX = Mouse.x, fromY = Mouse.z }):send() end
 			CastSpell(_R, Mouse.x, Mouse.z) 
 		elseif SkillR.ready and GetDistance(unit) <= SkillQ.range and Settings.combo.useR == 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 			CastSpell(_R, unit.x, unit.z)
 		elseif Settings.combo.useR == 3 then
 			return
@@ -429,7 +416,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Dynasty Ahri", "Midnight Ahri", "Foxfire Ahri", "Popstar Ahri", "Classic" })
 

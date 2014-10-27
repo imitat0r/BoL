@@ -1,9 +1,7 @@
-local version = "1.17"
-
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
-		Version: 1.17
+		Version: 1.18
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -163,14 +161,12 @@ function LaneClear()
 				qDmg = getDmg("Q", minion, myHero) + getDmg("AD", minion, myHero)
 
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and minion.health <= qDmg then 
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = minion.networkID}):send() end
 					CastSpell(_Q, minion) 
 				end
 				if Settings.lane.laneR and GetDistance(minion) <= SkillR.range then 
 					local BestPos, BestHit = GetBestLineFarmPosition(SkillR.range, SkillR.width, enemyMinions.objects)
 
 					if BestPos ~= nil then
-						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 						CastSpell(_R, BestPos.x, BestPos.z)
 					end
 				end
@@ -187,15 +183,12 @@ function JungleClear()
 			qDmg = getDmg("Q", JungleMob, myHero) + getDmg("AD", JungleMob, myHero)
 
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = JungleMob.networkID}):send() end
 				CastSpell(_Q, JungleMob)
 			end
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = JungleMob.networkID}):send() end
 				CastSpell(_E, JungleMob)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 				CastSpell(_W)
 			end
 		end
@@ -204,21 +197,18 @@ end
 
 function CastQ(unit)
 	if SkillQ.ready and GetDistance(unit) <= SkillQ.range and GetDistance(unit) > TrueRange() then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_Q, unit)
 	end
 end
 
 function CastQ2(unit)
 	if SkillQ.ready and GetDistance(unit) <= SkillQ.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_Q, unit)
 	end
 end
 
 function CastW(unit)
 	if SkillW.ready and GetDistance(unit) <= SkillW.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 		CastSpell(_W)
 	end
 end
@@ -229,14 +219,11 @@ function CastE(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillE.range and SkillE.ready then
 		if Settings.combo.useE == 2 then
 			if (myHero.health / myHero.maxHealth) < (unit.health / unit.maxHealth) then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 				CastSpell(_E, unit)
 			end
 		elseif Settings.combo.useE == 3 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 			CastSpell(_E, unit)
 		elseif harassKey and (Settings.combo.useE == 2 or Settings.combo.useE == 3) then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 			CastSpell(_E, unit)
 		end
 	end
@@ -247,7 +234,6 @@ function CastR(unit)
 		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
 				
 		if HitChance >= 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			CastSpell(_R, CastPosition.x, CastPosition.z)
 		end
 	end
@@ -263,10 +249,8 @@ function KillSteal()
 				CastQ2(enemy)
 			elseif enemy.health <= qDmg + eDmg and SkillQ.ready and SkillE.ready and GetDistance(enemy) <= SkillE.range and GetDistance(enemy) <= SkillQ.range then
 				CastQ2(enemy)
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = enemy.networkID}):send() end
 				CastSpell(_E, enemy)
 			elseif enemy.health <= eDmg and SkillE.ready and GetDistance(enemy) <= SkillE.range then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = enemy.networkID}):send() end
 				CastSpell(_E, enemy)
 			end
 
@@ -382,7 +366,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Nightblade Irelia", "Aviator Irelia", "Infiltrator Irelia", "Frostblade Irelia", "Classic" })
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
