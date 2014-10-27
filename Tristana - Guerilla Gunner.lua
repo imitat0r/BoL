@@ -1,3 +1,5 @@
+local version = "1.06"
+
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
