@@ -1,3 +1,5 @@
+local version = "1.02"
+
 --[[
 	Aatrox - Blood Prince
 		Author: Draconis
