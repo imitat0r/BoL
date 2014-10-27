@@ -1,9 +1,9 @@
-local version = "1.04"
+local version = "1.05"
 
 --[[
 	Shyvana - Flame Breath
 		Author: Draconis
-		Version: 1.04
+		Version: 1.05
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -14,8 +14,8 @@ if myHero.charName ~= "Shyvana" then return end
 _G.UseUpdater = true
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
-	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
+	["SxOrbwalk"] = "http://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
+	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua"
 }
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
@@ -73,18 +73,9 @@ end
 
 function OnLoad()
 	print("<b><font color=\"#6699FF\">Shyvana - Flame Breath:</font></b> <font color=\"#FFFFFF\">Good luck and have fun!</font>")
-	UpdateWeb(true, ScriptName, id, HWID)
 	Variables()
 	Menu()
 	PriorityOnLoad()
-end
-
-function OnBugsplat()
-	UpdateWeb(false, ScriptName, id, HWID)
-end
-
-function OnUnload()
-	UpdateWeb(false, ScriptName, id, HWID)
 end
 
 function OnTick()
@@ -170,12 +161,10 @@ function LaneClear()
 				if Settings.lane.laneE and GetDistance(minion) <= SkillE.range and SkillE.ready then
 					local BestPos, BestHit = GetBestLineFarmPosition(SkillE.range, SkillE.width, enemyMinions.objects)
 						if BestPos ~= nil then
-							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_E, BestPos.x, BestPos.z)
 						end
 				end
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 					CastSpell(_W)
 				end
 			end		 
@@ -189,15 +178,12 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 				CastSpell(_Q)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 				CastSpell(_W)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_E, JungleMob.x, JungleMob.z)
 			end
 		end
@@ -206,7 +192,6 @@ end
 
 function CastQ(unit)
 	if SkillQ.ready and GetDistance(unit) <= SkillQ.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
 		myHero:Attack(unit)
 	end
@@ -217,7 +202,6 @@ function CastE(unit)
 		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero)
 				
 		if HitChance >= 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			CastSpell(_E, CastPosition.x, CastPosition.z)
 		end
 	end
@@ -225,7 +209,6 @@ end
 
 function CastW(unit)
 	if SkillW.ready and GetDistance(unit) <= SkillW.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 		CastSpell(_W)
 	end
 end
@@ -235,16 +218,12 @@ function CastR(unit)
 
 	if SkillR.ready then
 		if Settings.combo.useR == 2 and CountEnemyHeroInRange(SkillR.range, myHero) >= 1 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 			CastSpell(_R, unit.x, unit.z)
 		elseif Settings.combo.useR == 3 and CountEnemyHeroInRange(SkillR.range, myHero) >= 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 			CastSpell(_R, unit.x, unit.z)
 		elseif Settings.combo.useR == 4 and CountEnemyHeroInRange(SkillR.range, myHero) >= 3 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 			CastSpell(_R, unit.x, unit.z)
 		elseif Settings.combo.useR == 5 and CountEnemyHeroInRange(SkillR.range, myHero) >= 4 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 			CastSpell(_R, unit.x, unit.z)
 		end
 	end
@@ -300,7 +279,7 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
-	SOWi:ForceTarget(Target)
+	SxOrb:ForceTarget(Target)
 	
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
@@ -357,12 +336,11 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Ironscale Shyvana", "Boneclaw Shyvana", "Darkflame Shyvana", "Ice Drake Shyvana", "Classic" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillR.range, DAMAGE_PYSHCIAL, true)
 	TargetSelector.name = "Shyvana"
@@ -379,7 +357,6 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SOWi = SOW(VP)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
@@ -572,10 +549,10 @@ end
 
 function GetJungleMob()
 	for _, Mob in pairs(JungleFocusMobs) do
-		if ValidTarget(Mob, SkillQ.range) then return Mob end
+		if ValidTarget(Mob, SkillE.range) then return Mob end
 	end
 	for _, Mob in pairs(JungleMobs) do
-		if ValidTarget(Mob, SkillQ.range) then return Mob end
+		if ValidTarget(Mob, SkillE.range) then return Mob end
 	end
 end
 
