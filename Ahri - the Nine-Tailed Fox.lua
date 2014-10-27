@@ -1,3 +1,5 @@
+local version = "1.19"
+
 --[[
 	Ahri - the Nine-Tailed Fox
 		Author: Draconis
