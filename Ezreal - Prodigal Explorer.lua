@@ -1,9 +1,7 @@
-local version = "1.07"
-
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.07
+		Version: 1.08
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -183,7 +181,6 @@ function LaneClear()
 		for i, minion in pairs(enemyMinions.objects) do
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = minion.x, toY = minion.z, fromX = minion.x, fromY = minion.z }):send() end
 					CastSpell(_Q, minion.x, minion.z)
 				end
 			end		 
@@ -197,7 +194,6 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_Q, JungleMob.x, JungleMob.z)
 			end
 		end
@@ -210,14 +206,12 @@ function CastQ(unit)
 			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
 					
 			if HitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 				CastSpell(_Q, CastPosition.x, CastPosition.z)
 			end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillQ.range, SkillQ.speed, SkillQ.delay, SkillQ.width)
 			
 			if pos ~= nil and not info.mCollision() then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z }):send() end
 				CastSpell(_Q, pos.x, pos.z)
 			end
 		end
@@ -230,14 +224,12 @@ function CastW(unit)
 			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 				
 			if HitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 				CastSpell(_W, CastPosition.x, CastPosition.z)
 			end
 		elseif Settings.misc.prediction == 2 and VIP_USER then
 			local pos, info = Prodiction.GetPrediction(unit, SkillW.range, SkillW.speed, SkillW.delay, SkillW.width)
 			
 			if pos ~= nil then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z }):send() end
 				CastSpell(_W, pos.x, pos.z)
 			end
 		end
@@ -248,12 +240,10 @@ function CastE(unit)
 	if Settings.combo.useE == 3 then return end
 
 	if Settings.combo.useE == 2 and unit ~= nil and GetDistance(unit) <= (SkillQ.range + SkillE.range) and SkillE.ready then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 		CastSpell(_E, unit.x, unit.z)
 	elseif Settings.combo.useE == 1 and GetDistance(unit) <= (SkillQ.range + SkillE.range) then
 		local Mouse = Vector(myHero) + 400 * (Vector(mousePos) - Vector(myHero)):normalized()
 		
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = Mouse.x, toY = Mouse.z, fromX = Mouse.x, fromY = Mouse.z }):send() end
 		CastSpell(_E, Mouse.x, Mouse.z)
 	end
 end
@@ -267,20 +257,15 @@ function CastR(unit)
 			if MainTargetHitChance >= 2 then
 				if ComboKey then
 					if Settings.combo.useR2 == 2 and nTargets >= 1 then
-						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 					elseif Settings.combo.useR2 == 3 and nTargets >= 2 then
-						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 					elseif Settings.combo.useR2 == 4 and nTargets >= 3 then
-						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 					elseif Settings.combo.useR2 == 5 and nTargets >= 4 then
-						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 					end
 				else
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 					CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
 				end
 			end
@@ -288,7 +273,6 @@ function CastR(unit)
 			local pos, info = Prodiction.GetPrediction(unit, SkillR.range, SkillR.speed, SkillR.delay, SkillR.width)
 			
 			if pos ~= nil then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z }):send() end
 				CastSpell(_R, pos.x, pos.z)
 			end
 		end
@@ -451,7 +435,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, false)
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 8, { "Nottingham", "Striker", "Frosted", "Explorer", "Pulsefire", "TPA", "Debonair", "Classic" })
 

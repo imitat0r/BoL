@@ -1,9 +1,7 @@
-local version = "1.05"
-
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.05
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -214,13 +212,11 @@ function LaneClear()
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillW.range, SkillW.width, enemyMinions.objects)
 						if BestPos ~= nil and not UnderTurret(BestPos, true) then
-							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_W, BestPos.x, BestPos.z)
 						end
 				end
 				
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 					CastSpell(_Q)
 				end
 			end		 
@@ -234,15 +230,12 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_W, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = JungleMob.networkID}):send() end
 				CastSpell(_E, JungleMob)
 			end
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 				CastSpell(_Q)
 			end
 		end
@@ -251,7 +244,6 @@ end
 
 function CastQ(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
 	end
 end
@@ -262,7 +254,6 @@ function CastW(unit)
 
 		if AOECastPosition ~= nil and (ComboKey and CountEnemyHeroInRange(SkillW.width, AOECastPosition) > Settings.combo.useWenemies) then return end
 			if MainTargetHitChance >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_W, AOECastPosition.x, AOECastPosition.z)
 			end
 	end
@@ -270,14 +261,12 @@ end
 
 function CastE(unit)
 	if unit ~= nil and SkillE.ready and GetDistance(unit) <= SkillE.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_E, unit)
 	end
 end
 
 function CastR(unit)
 	if unit ~= nil and SkillR.ready and GetDistance(unit) <= SkillR.range then
-		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_R, unit)
 	end
 end
@@ -432,7 +421,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 7, { "Riot Girl", "Earnest Elf", "Firefighter", "Guerilla", "Buccaneer", "Rocket Girl", "Classic" })
 
 	

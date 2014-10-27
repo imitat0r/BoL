@@ -1,9 +1,7 @@
-local version = "1.04"
-
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.04
+		Version: 1.05
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -173,7 +171,6 @@ function LaneClear()
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillQ.range, SkillQ.width, enemyMinions.objects)
 						if BestPos ~= nil then
-							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_Q, BestPos.x, BestPos.z)
 						end
 				end
@@ -181,14 +178,12 @@ function LaneClear()
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillW.range, SkillW.width, enemyMinions.objects)
 						if BestPos ~= nil then
-							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_W, BestPos.x, BestPos.z)
 						end
 				end
 				
 				if Settings.lane.laneE and GetDistance(minion) <= SkillE.range and SkillE.ready then
 					if isPoisoned(minion) then
-						if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = minion.networkID}):send() end
 						CastSpell(_E, minion)
 					end
 				end
@@ -203,16 +198,13 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_Q, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_W, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
 				if isPoisoned(JungleMob) then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = JungleMob.networkID}):send() end
 					CastSpell(_E, JungleMob)
 				end
 			end
@@ -225,7 +217,6 @@ function CastQ(unit)
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
 		
 		if MainTargetHitChance >= 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 			CastSpell(_Q, AOECastPosition.x, AOECastPosition.z)
 		end
 	end
@@ -238,7 +229,6 @@ function CastW(unit)
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 		
 		if MainTargetHitChance >= 2 then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 			CastSpell(_W, AOECastPosition.x, AOECastPosition.z)
 		end
 	end
@@ -247,7 +237,6 @@ end
 function CastE(unit)
 	if unit ~= nil and SkillE.ready and GetDistance(unit) <= SkillE.range then
 		if isPoisoned(unit) then
-			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 			CastSpell(_E, unit)
 		end
 	end
@@ -262,16 +251,12 @@ function CastR(unit)
 		
 		if mainHitChance >= 2 and unit.health < ComboDamage then
 			if Settings.combo.useR == 2 and maxHit >= 1 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 			elseif Settings.combo.useR == 3 and maxHit >= 2 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
-					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
+				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 			elseif Settings.combo.useR == 4 and maxHit >= 3 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 			elseif Settings.combo.useR == 5 and maxHit >= 4 then
-				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 				CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 			end
 		end
@@ -287,16 +272,12 @@ function CastAutoR()
 		
 			if mainHitChance >= 2 then
 				if Settings.combo.useAutoR == 2 and maxHit >= 1 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 				elseif Settings.combo.useAutoR == 3 and maxHit >= 2 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
-						CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
+					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 				elseif Settings.combo.useAutoR == 4 and maxHit >= 3 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 					CastSpell(_R, mainCastPosition.x, mainCastPosition.z) 
 				elseif Settings.combo.useAutoR == 5 and maxHit >= 4 then
-					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 					CastSpell(_R, mainCastPosition.x, mainCastPosition.z)
 				end
 			end
@@ -440,7 +421,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Desperada", "Siren", "Mythic", "Jade Fang", "Classic" })
 		Settings.misc:addParam("levelSkills", "Auto level spells", SCRIPT_PARAM_LIST, 1, { "No", "Mid", "Support", "Top" })
 
