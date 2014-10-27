@@ -1,3 +1,5 @@
+local version = "1.07"
+
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
