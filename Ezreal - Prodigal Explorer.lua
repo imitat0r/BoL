@@ -1,3 +1,5 @@
+local version = "1.08"
+
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
