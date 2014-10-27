@@ -1,3 +1,5 @@
+local version = "1.10"
+
 --[[
 	Morgana - Blackthorn Angel
 		Author: Draconis
