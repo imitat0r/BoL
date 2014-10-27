@@ -1,7 +1,9 @@
+local version = "1.06"
+
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.07
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -162,11 +164,13 @@ function LaneClear()
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillQ.range, SkillQ.width, enemyMinions.objects)
 						if BestPos ~= nil then
+							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_Q, BestPos.x, BestPos.z)
 						end
 				end
 				
 				if Settings.lane.laneR and GetDistance(minion) <= SkillR.range and SkillR.ready then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = minion.x, toY = minion.z, fromX = minion.x, fromY = minion.z }):send() end
 					CastSpell(_R, minion.x, minion.z)
 				end
 			end		 
@@ -180,9 +184,11 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_Q, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleR and GetDistance(JungleMob) <= SkillR.range and SkillR.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_R, JungleMob.x, JungleMob.z)
 			end
 		end
@@ -194,6 +200,7 @@ function CastQ(unit)
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
 		
 		if MainTargetHitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 			CastSpell(_Q, AOECastPosition.x, AOECastPosition.z)
 		end
 	end
@@ -203,8 +210,10 @@ function CastW(unit)
 	if unit ~= nil then
 		if SkillW.ready and GetDistance(unit) <= SkillW.range and Settings.combo.useW == 1 then
 			local Mouse = Vector(myHero) + 400 * (Vector(mousePos) - Vector(myHero)):normalized()
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = Mouse.x, toY = Mouse.z, fromX = Mouse.x, fromY = Mouse.z }):send() end
 			CastSpell(_W, Mouse.x, Mouse.z) 
 		elseif SkillW.ready and GetDistance(unit) <= SkillW.range and Settings.combo.useW == 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 			CastSpell(_W, unit.x, unit.z)
 		elseif Settings.combo.useW == 3 then
 			return
@@ -214,6 +223,7 @@ end
 
 function CastE(unit)
 	if unit ~= nil and SkillE.ready and GetDistance(unit) <= SkillE.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = unit.x, toY = unit.z, fromX = unit.x, fromY = unit.z }):send() end
 		CastSpell(_E, unit.x, unit.z)
 	end
 end
@@ -233,6 +243,7 @@ function CastR(unit)
 		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero, true)
 		
 		if HitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			CastSpell(_R, CastPosition.x, CastPosition.z)
 		end
 	end
@@ -243,6 +254,7 @@ function CastR_TBO(unit)
 		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillR.delay, SkillR.width*2, SkillR.range, SkillR.speed, myHero, true)
 		
 		if HitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			CastSpell(_R, CastPosition.x, CastPosition.z)
 		end
 	end
@@ -368,6 +380,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 8, { "UFO", "Ice Toboggan", "Red Baron", "Hot Rod", "Urfrider", "Dragonwing", "Fnatic", "Classic" })
 
 	

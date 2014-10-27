@@ -1,7 +1,9 @@
+local version = "1.09"
+
 --[[
 	Morgana - Blackthorn Angel
 		Author: Draconis
-		Version: 1.10
+		Version: 1.09
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -158,6 +160,7 @@ function LaneClear()
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillW.range, SkillW.width, enemyMinions.objects)
 
 					if BestPos ~= nil then
+						if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 						CastSpell(_W, BestPos.x, BestPos.z)
 					end
 				end
@@ -171,6 +174,7 @@ function CastQ(unit)
 		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
 				
 		if HitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			CastSpell(_Q, CastPosition.x, CastPosition.z)
 		end
 	end
@@ -178,6 +182,7 @@ end
 
 function CastE(unit)
 	if SkillE.ready and GetDistance(unit) <= SkillE.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_E, unit)
 	end
 end
@@ -190,12 +195,16 @@ function CastW(unit)
 	
 		if MainTargetHitChance >= 2 then
 			if Settings.combo.useW == 2 and nTargets >= 1 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_W, AOECastPosition.x, AOECastPosition.z) 
 			elseif Settings.combo.useW == 3 and nTargets >= 2 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_W, AOECastPosition.x, AOECastPosition.z) 
 			elseif Settings.combo.useW == 4 and nTargets >= 3 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_W, AOECastPosition.x, AOECastPosition.z) 
 			elseif Settings.combo.useW == 5 and nTargets >= 4 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_W, AOECastPosition.x, AOECastPosition.z) 
 			end
 		end
@@ -211,12 +220,16 @@ function CastR(unit)
 		end
 		
 		if CountEnemyHeroInRange(SkillR.range, myHero) >= 1 and Settings.combo.useR == 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		elseif CountEnemyHeroInRange(SkillR.range, myHero) >= 2 and Settings.combo.useR == 3 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		elseif CountEnemyHeroInRange(SkillR.range, myHero) >= 3 and Settings.combo.useR == 3 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		elseif CountEnemyHeroInRange(SkillR.range, myHero) >= 4 and Settings.combo.useR == 4 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		end
 	end
@@ -338,6 +351,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 6, { "Exiled Morgana", "Sinful Succulence Morgana", "Blade Mistress Morgana", "Blackthorn Morgana", "Ghost Bride Morgana", "Classic" })
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")

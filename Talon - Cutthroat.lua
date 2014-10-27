@@ -1,7 +1,9 @@
+local version = "1.04"
+
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.05
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -180,11 +182,13 @@ function LaneClear()
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
 					local BestPos, BestHit = GetBestLineFarmPosition(SkillW.range, SkillW.angle, enemyMinions.objects)
 						if BestPos ~= nil then
+							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_W, BestPos.x, BestPos.z)
 						end
 				end
 				
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
+					if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 					CastSpell(_Q)
 					myHero:Attack(minion)
 				end
@@ -199,13 +203,16 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 				CastSpell(_Q)
 				myHero:Attack(JungleMob)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range and SkillW.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_W, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = JungleMob.networkID}):send() end
 				CastSpell(_E, JungleMob)
 			end
 		end
@@ -220,6 +227,7 @@ end
 
 function CastQ(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
 		myHero:Attack(unit)
 	end
@@ -230,6 +238,7 @@ function CastW(unit)
 		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillW.delay, SkillW.angle, SkillW.range, SkillW.speed, myHero)
 		
 		if mainHitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _W, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send() end
 			CastSpell(_W, mainCastPosition.x, mainCastPosition.z)
 		end
 	end
@@ -237,6 +246,7 @@ end
 
 function CastE(unit)
 	if unit ~= nil and SkillE.ready and GetDistance(unit) <= SkillE.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_E, unit)
 	end
 end
@@ -422,6 +432,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 4, { "Renegade", "Crimson Elite", "Dragonblade", "Classic" })
 
 	

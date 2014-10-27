@@ -1,7 +1,9 @@
+local version = "1.22"
+
 --[[
 	Evelynn - Widowmaker
 		Author: Draconis
-		Version: 1.23
+		Version: 1.22
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -196,12 +198,14 @@ end
 
 function CastQ(unit)
 	if SkillQ.ready and GetDistance(unit) <= SkillQ.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q}):send() end
 		CastSpell(_Q)
 	end
 end
 
 function CastE(unit)
 	if SkillE.ready and GetDistance(unit) <= SkillE.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
 		CastSpell(_E, unit)
 	end
 end
@@ -209,10 +213,12 @@ end
 function CastW(unit)
 	if ComboKey then
 		if SkillW.ready and GetDistance(unit) <= SkillW.range then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 			CastSpell(_W)
 		end
 	elseif FleeKey then
 		if SkillW.ready and GetDistance(unit) <= math.huge then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 			CastSpell(_W)
 		end
 	end
@@ -226,12 +232,16 @@ function CastR(unit)
 	
 		if MainTargetHitChance >= 2 then
 			if Settings.combo.useR == 2 and nTargets >= 1 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 			elseif Settings.combo.useR == 3 and nTargets >= 2 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 			elseif Settings.combo.useR == 4 and nTargets >= 3 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 			elseif Settings.combo.useR == 5 and nTargets >= 4 then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _R, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 				CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 			end
 		end
@@ -360,6 +370,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 			
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")	
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("slowsW", "Use "..SkillW.name.." (W) if slowed", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 4, { "Shadow Evelynn", "Masquerade Evelynn", "Tango Evelynn", "Classic" })
 	

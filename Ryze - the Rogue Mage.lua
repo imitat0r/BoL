@@ -1,7 +1,9 @@
+local version = "1.20"
+
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.21
+		Version: 1.20
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -263,31 +265,22 @@ end
 
 function CastQ(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		if VIP_USER and Settings.misc.packets then
-			Packet("S_CAST", {spellId = _Q, targetNetworkId = unit.networkID}):send()
-		else
-			CastSpell(_Q, unit)
-		end
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = unit.networkID}):send() end
+		CastSpell(_Q, unit)
 	end
 end
 
 function CastE(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillE.range and SkillE.ready then
-		if VIP_USER and Settings.misc.packets then
-			Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send()
-		else
-			CastSpell(_E, unit)
-		end
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send() end
+		CastSpell(_E, unit)
 	end
 end
 
 function CastW(unit)
 	if unit ~= nil and SkillW.ready and GetDistance(unit) <= SkillW.range then
-		if VIP_USER and Settings.misc.packets then
-			Packet("S_CAST", {spellId = _W, targetNetworkId = unit.networkID}):send()
-		else
-			CastSpell(_W, unit)
-		end
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W, targetNetworkId = unit.networkID}):send() end
+		CastSpell(_W, unit)
 	end
 end
 
@@ -296,12 +289,16 @@ function CastR()
 		if Settings.combo.useR == 1 then
 			return
 		elseif Settings.combo.useR == 2 and CountEnemyHeroInRange(SkillQ.range, myHero) >= 1 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R) 
 		elseif Settings.combo.useR == 3 and CountEnemyHeroInRange(SkillQ.range, myHero) >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		elseif Settings.combo.useR == 4 and CountEnemyHeroInRange(SkillQ.range, myHero) >= 3 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		elseif Settings.combo.useR == 5 and CountEnemyHeroInRange(SkillQ.range, myHero) >= 4 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 			CastSpell(_R)
 		end
 	end

@@ -1,7 +1,9 @@
+local version = "1.01"
+
 --[[
 	Aatrox - Blood Prince
 		Author: Draconis
-		Version: 1.02
+		Version: 1.01
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -163,6 +165,7 @@ function LaneClear()
 				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillQ.range, SkillQ.width, enemyMinions.objects)
 						if BestPos ~= nil and not UnderTurret(BestPos, true) then
+							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_Q, BestPos.x, BestPos.z)
 						end
 				end
@@ -170,6 +173,7 @@ function LaneClear()
 				if Settings.lane.laneE and GetDistance(minion) <= SkillE.range and SkillE.ready then
 					local BestPos, BestHit = GetBestLineFarmPosition(SkillE.range, SkillE.width, enemyMinions.objects)
 						if BestPos ~= nil then
+							if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = BestPos.x, toY = BestPos.z, fromX = BestPos.x, fromY = BestPos.z }):send() end
 							CastSpell(_E, BestPos.x, BestPos.z)
 						end
 				end
@@ -184,9 +188,11 @@ function JungleClear()
 		
 		if JungleMob ~= nil then
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = JungleMob.x, toY = JungleMob.z, fromX = JungleMob.x, fromY = JungleMob.z }):send() end
 				CastSpell(_E, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
+				if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _Q, targetNetworkId = JungleMob.networkID}):send() end
 				CastSpell(_Q, JungleMob)
 			end
 		end
@@ -198,6 +204,7 @@ function CastQ(unit)
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
 
 		if MainTargetHitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _Q, toX = AOECastPosition.x, toY = AOECastPosition.z, fromX = AOECastPosition.x, fromY = AOECastPosition.z }):send() end
 			CastSpell(_Q, AOECastPosition.x, AOECastPosition.z)
 		end
 	end
@@ -206,8 +213,10 @@ end
 function CastW(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then
 		if myHero.health > (myHero.maxHealth * ( Settings.combo.useWHealth / 100)) and myHero:GetSpellData(_W).name == "AatroxW" then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 			CastSpell(_W)
 		elseif myHero.health < (myHero.maxHealth * ( Settings.combo.useWHealth / 100)) and myHero:GetSpellData(_W).name == "aatroxw2" then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _W}):send() end
 			CastSpell(_W)
 		end
 	end
@@ -218,6 +227,7 @@ function CastE(unit)
 		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero)
 					
 		if HitChance >= 2 then
+			if VIP_USER and Settings.misc.packets then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			CastSpell(_E, CastPosition.x, CastPosition.z)
 		end
 	end
@@ -225,6 +235,7 @@ end
 
 function CastR(unit)
 	if unit ~= nil and SkillR.ready and GetDistance(unit) <= SkillR.range then
+		if VIP_USER and Settings.misc.packets then Packet("S_CAST", {spellId = _R}):send() end
 		CastSpell(_R)
 	end
 end
@@ -361,6 +372,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 3, { "Justicar", "Mecha", "Classic" })
 
 	
