@@ -9,7 +9,7 @@ local version = "1.02"
 	Dependency: Standalone
 --]]
 
-if myHero.charName ~= "Aatrox" then return end
+if myHero.charName ~= "Khazix" then return end
 
 _G.UseUpdater = true
 
@@ -115,8 +115,8 @@ function OnDraw()
 		if SkillE.ready and Settings.drawing.eDraw then 
 			DrawCircle(myHero.x, myHero.y, myHero.z, SkillE.range, RGB(Settings.drawing.eColor[2], Settings.drawing.eColor[3], Settings.drawing.eColor[4]))
 		end
-		if SkillR.ready and Settings.drawing.rDraw then 
-			DrawCircle(myHero.x, myHero.y, myHero.z, SkillR.range, RGB(Settings.drawing.rColor[2], Settings.drawing.rColor[3], Settings.drawing.rColor[4]))
+		if SkillW.ready and Settings.drawing.rDraw then 
+			DrawCircle(myHero.x, myHero.y, myHero.z, SkillW.range, RGB(Settings.drawing.rColor[2], Settings.drawing.rColor[3], Settings.drawing.rColor[4]))
 		end
 		
 		if Settings.drawing.myHero then
