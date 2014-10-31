@@ -1,9 +1,9 @@
-local version = "1.06"
+local version = "1.07"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.06
+		Version: 1.07
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -16,6 +16,7 @@ _G.UseUpdater = true
 local REQUIRED_LIBS = {
 	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
+	["Sourcelib"] = "https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",
 }
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
@@ -111,6 +112,9 @@ function OnDraw()
 	if not myHero.dead and not Settings.drawing.mDraw then
 		if SkillW.ready and Settings.drawing.wDraw then 
 			DrawCircle(myHero.x, myHero.y, myHero.z, SkillW.range, RGB(Settings.drawing.wColor[2], Settings.drawing.wColor[3], Settings.drawing.wColor[4]))
+			if GetDistance(mousePos) <= SkillW.range then
+				DrawCircle(mousePos.x, mousePos.y, mousePos.z, SkillW.width, RGB(Settings.drawing.wColor[2], Settings.drawing.wColor[3], Settings.drawing.wColor[4]))
+			end
 		end
 		if SkillR.ready and Settings.drawing.rDraw then 
 			DrawCircle(myHero.x, myHero.y, myHero.z, SkillR.range, RGB(Settings.drawing.rColor[2], Settings.drawing.rColor[3], Settings.drawing.rColor[4]))
@@ -122,59 +126,6 @@ function OnDraw()
 		
 		if Settings.drawing.Target and Target ~= nil and Target.type == myHero.type then
 			DrawCircle(Target.x, Target.y, Target.z, 80, ARGB(255, 10, 255, 10))
-		end
-	end
-end
-
-function OnProcessSpell(unit, spell)
-	if #Interrupt > 0 and SkillR.ready and Settings.interrupt.enabled and not IsMyManaLow("Interrupt") then
-		for _, skill in pairs(Interrupt) do
-			if spell.name == skill and unit.team ~= myHero.team then
-				if ValidTarget(unit) and GetDistance(unit) <= SkillR.range then
-					CastSpell(_R, unit)
-				end
-			end
-		end
-	end
-	
-	-- Manciuszz
-	local jarvanAddition = unit.charName == "JarvanIV" and unit:CanUseSpell(_Q) ~= READY and _R or _Q
-    local isAGapcloserUnit = {
-        ['Aatrox']      = {true, spell = _Q,                  range = 1000,  projSpeed = 1200, },
-        ['Akali']       = {true, spell = _R,                  range = 800,   projSpeed = 2200, },
-        ['Alistar']     = {true, spell = _W,                  range = 650,   projSpeed = 2000, },
-        ['Diana']       = {true, spell = _R,                  range = 825,   projSpeed = 2000, },
-        ['Gragas']      = {true, spell = _E,                  range = 600,   projSpeed = 2000, },
-        ['Graves']      = {true, spell = _E,                  range = 425,   projSpeed = 2000, },
-        ['Hecarim']     = {true, spell = _R,                  range = 1000,  projSpeed = 1200, },
-        ['Irelia']      = {true, spell = _Q,                  range = 650,   projSpeed = 2200, },
-        ['JarvanIV']    = {true, spell = jarvanAddition,      range = 770,   projSpeed = 2000, },
-        ['Jax']         = {true, spell = _Q,                  range = 700,   projSpeed = 2000, },
-        ['Jayce']       = {true, spell = 'JayceToTheSkies',   range = 600,   projSpeed = 2000, },
-        ['Khazix']      = {true, spell = _E,                  range = 900,   projSpeed = 2000, },
-        ['Leblanc']     = {true, spell = _W,                  range = 600,   projSpeed = 2000, },
-        ['LeeSin']      = {true, spell = 'blindmonkqtwo',     range = 1300,  projSpeed = 1800, },
-        ['Malphite']    = {true, spell = _R,                  range = 1000,  projSpeed = 1500 + unit.ms},
-        ['Maokai']      = {true, spell = _Q,                  range = 600,   projSpeed = 1200, },
-        ['MonkeyKing']  = {true, spell = _E,                  range = 650,   projSpeed = 2200, },
-        ['Pantheon']    = {true, spell = _W,                  range = 600,   projSpeed = 2000, },
-        ['Poppy']       = {true, spell = _E,                  range = 525,   projSpeed = 2000, },
-        ['Renekton']    = {true, spell = _E,                  range = 450,   projSpeed = 2000, },
-        ['Sejuani']     = {true, spell = _Q,                  range = 650,   projSpeed = 2000, },
-        ['Shen']        = {true, spell = _E,                  range = 575,   projSpeed = 2000, },
-        ['Tristana']    = {true, spell = _W,                  range = 900,   projSpeed = 2000, },
-        ['Tryndamere']  = {true, spell = 'Slash',             range = 650,   projSpeed = 1450, },
-        ['XinZhao']     = {true, spell = _E,                  range = 650,   projSpeed = 2000, },
-		['Yasuo']		= {true, spell = _E,                  range = 475,   projSpeed = 2000, },
-    }
-	
-	if Settings.pushAway.enabled and not IsMyManaLow("PushAway") then
-		if unit.type == myHero.type and unit.team ~= myHero.team and isAGapcloserUnit[unit.charName] and GetDistance(unit) < SkillR.range and spell ~= nil then
-			if spell.name == (type(isAGapcloserUnit[unit.charName].spell) == 'number' and unit:GetSpellData(isAGapcloserUnit[unit.charName].spell).name or isAGapcloserUnit[unit.charName].spell) then
-				if spell.target ~= nil and spell.target.name == myHero.name or isAGapcloserUnit[unit.charName].spell == 'blindmonkqtwo' then
-					CastSpell(_R, unit)
-				end
-			end
 		end
 	end
 end
@@ -303,6 +254,18 @@ function AutoIgnite(unit)
 	end
 end
 
+function OnTargetGapclosing(unit, spell)
+	if SkillR.ready and GetDistance(unit) <= SkillR.range and not IsMyManaLow("PushAway") then
+		CastR(unit)
+	end
+end
+
+function OnTargetInterruptable(unit, spell)
+	if SkillR.ready and GetDistance(unit) <= SkillR.range and not IsMyManaLow("Interrupt") then
+		CastR(unit)
+	end
+end
+
 ------------------------------------------------------
 --			 Checks, menu & stuff				
 ------------------------------------------------------
@@ -378,12 +341,12 @@ function Menu()
 		Settings.harass:permaShow("harassKey")
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Interrupt Settings", "interrupt")
-		Settings.interrupt:addParam("enabled", "Use "..SkillR.name.." (R) to Interrupt", SCRIPT_PARAM_ONOFF, true)
-		Settings.interrupt:addParam("interruptMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
-	
+			Interrupter(Settings.interrupt, OnTargetInterruptable)
+			Settings.interrupt:addParam("interruptMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)	
+			
 	Settings:addSubMenu("["..myHero.charName.."] - Push Away Settings", "pushAway")
-		Settings.pushAway:addParam("enabled", "Use "..SkillR.name.." (R) to Push Away", SCRIPT_PARAM_ONOFF, true)
-		Settings.pushAway:addParam("pushAwayMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
+			AntiGapcloser(Settings.pushAway, OnTargetGapclosing)
+			Settings.pushAway:addParam("pushAwayMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Lane Clear Settings", "lane")
 		Settings.lane:addParam("laneKey", "Lane Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
@@ -411,11 +374,11 @@ function Menu()
 		Settings.drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
 		Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("wDraw", "Draw "..SkillW.name.." (W) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("rDraw", "Draw "..SkillR.name.." (R) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		
 		Settings.drawing:addSubMenu("Lag Free Circles", "lfc")	
 			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
@@ -436,7 +399,7 @@ end
 
 function Variables()
 	SkillQ = { name = "Rapid Fire", range = TrueRange(), delay = nil, speed = nil, width = nil, ready = false }
-	SkillW = { name = "Rocket Jump", range = 900, delay = 0.25, speed = 2000, width = 450, ready = false }
+	SkillW = { name = "Rocket Jump", range = 900, delay = 0.5, speed = 1500, width = 270, ready = false }
 	SkillE = { name = "Explosive Shot", range = TrueRange(), delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Buster Shot", range = TrueRange(), delay = nil, speed = nil, width = nil, ready = false }
 	Ignite = { name = "summonerdot", range = 600, slot = nil }
@@ -448,7 +411,6 @@ function Variables()
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	Interrupt = {}
 	
 	lastSkin = 0
 	
@@ -466,24 +428,7 @@ function Variables()
 	
 	_G.oldDrawCircle = rawget(_G, 'DrawCircle')
 	_G.DrawCircle = DrawCircle2
-	
-	InterruptList = {
-			{ charName = "Caitlyn", spellName = "CaitlynAceintheHole"},
-			{ charName = "FiddleSticks", spellName = "Crowstorm"},
-			{ charName = "FiddleSticks", spellName = "DrainChannel"},
-			{ charName = "Galio", spellName = "GalioIdolOfDurand"},
-			{ charName = "Karthus", spellName = "FallenOne"},
-			{ charName = "Katarina", spellName = "KatarinaR"},
-			{ charName = "Malzahar", spellName = "AlZaharNetherGrasp"},
-			{ charName = "MissFortune", spellName = "MissFortuneBulletTime"},
-			{ charName = "Nunu", spellName = "AbsoluteZero"},
-			{ charName = "Pantheon", spellName = "Pantheon_GrandSkyfall_Jump"},
-			{ charName = "Shen", spellName = "ShenStandUnited"},
-			{ charName = "Urgot", spellName = "UrgotSwap2"},
-			{ charName = "Varus", spellName = "VarusQ"},
-			{ charName = "Warwick", spellName = "InfiniteDuress"}
-	}
-	
+
 	priorityTable = {
 			AP = {
 				"Annie", "Ahri", "Akali", "Anivia", "Annie", "Brand", "Cassiopeia", "Diana", "Evelynn", "FiddleSticks", "Fizz", "Gragas", "Heimerdinger", "Karthus",
@@ -598,12 +543,6 @@ function Variables()
 			end
 		end
 	end
-	
-	for _, champ in pairs(InterruptList) do
-		if champ.charName and champ.team ~= myHero.team then
-			table.insert(Interrupt, champ.spellName)
-		end
-	end
 end
 
 function SetPriority(table, hero, priority)
@@ -701,7 +640,7 @@ function TrueRange()
 	if myHero.level > 1 then
 		return (550 + 70) + (myHero.level * 8.5)
 	else
-		return 550
+		return (550 + 70)
 	end
 end
 
