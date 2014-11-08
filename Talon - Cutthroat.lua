@@ -1,9 +1,9 @@
-local version = "1.05"
+local version = "1.06"
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.05
+		Version: 1.06
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -12,6 +12,7 @@ local version = "1.05"
 if myHero.charName ~= "Talon" then return end
 
 _G.UseUpdater = true
+_G.UseSkinHack = true
 
 local REQUIRED_LIBS = {
 	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
@@ -190,6 +191,9 @@ function LaneClear()
 					CastSpell(_Q)
 					myHero:Attack(minion)
 				end
+				
+				if GetDistance(minion) <= Items.TMT.range then CastItem(3074) end
+				if GetDistance(minion) <= Items.TMT.range then CastItem(3077) end
 			end		 
 		end
 	end
@@ -210,19 +214,30 @@ function JungleClear()
 			if Settings.jungle.jungleE and GetDistance(JungleMob) <= SkillE.range and SkillE.ready then
 				CastSpell(_E, JungleMob)
 			end
+			
+			if GetDistance(JungleMob) <= Items.TMT.range then CastItem(3074) end
+			if GetDistance(JungleMob) <= Items.TMT.range then CastItem(3077) end
 		end
 	end
 end
 
 function AfterAttack(unit)
 	if unit ~= nil and ValidTarget(unit) and unit.type == myHero.type and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		CastSpell(_Q)
+		if VIP_USER and Settings.misc.packets then
+			Packet("S_CAST", {spellId = _Q}):send()
+		else
+			CastSpell(_Q)
+		end
 	end
 end
 
 function CastQ(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		CastSpell(_Q)
+		if VIP_USER and Settings.misc.packets then
+			Packet("S_CAST", {spellId = _Q}):send()
+		else
+			CastSpell(_Q)
+		end
 		myHero:Attack(unit)
 	end
 end
@@ -232,29 +247,53 @@ function CastW(unit)
 		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillW.delay, SkillW.angle, SkillW.range, SkillW.speed, myHero)
 		
 		if mainHitChance >= 2 then
-			CastSpell(_W, mainCastPosition.x, mainCastPosition.z)
+			if VIP_USER and Settings.misc.packets then
+				Packet("S_CAST", { spellId = _W, toX = mainCastPosition.x, toY = mainCastPosition.z, fromX = mainCastPosition.x, fromY = mainCastPosition.z }):send()
+			else
+				CastSpell(_W, mainCastPosition.x, mainCastPosition.z)
+			end
 		end
 	end
 end
 
 function CastE(unit)
 	if unit ~= nil and SkillE.ready and GetDistance(unit) <= SkillE.range then
-		CastSpell(_E, unit)
+		if VIP_USER and Settings.misc.packets then
+			Packet("S_CAST", {spellId = _E, targetNetworkId = unit.networkID}):send()
+		else
+			CastSpell(_E, unit)
+		end
 	end
 end
 
 function CastR(unit)
 	if unit ~= nil and GetDistance(unit) <= (SkillR.range - 100) and SkillR.ready then
-		if Settings.combo.useR == 1 then
-			local qDmg = getDmg("Q", unit, myHero)
-			local wDmg = getDmg("W", unit, myHero)
-			local rDmg = getDmg("R", unit, myHero, 3)
+		local qDmg = getDmg("Q", unit, myHero)
+		local wDmg = getDmg("W", unit, myHero)
+		local rDmg = getDmg("R", unit, myHero, 3)
 			
+		if Settings.combo.useR == 1 then
 			if unit.health <= qDmg + wDmg + rDmg then
-				CastSpell(_R)
+				if VIP_USER and Settings.misc.packets then
+					Packet("S_CAST", {spellId = _R}):send()
+				else
+					CastSpell(_R)
+				end
 			end
 		elseif Settings.combo.useR == 2 then
-			CastSpell(_R)
+			if unit.health >= qDmg + wDmg then
+				if VIP_USER and Settings.misc.packets then
+					Packet("S_CAST", {spellId = _R}):send()
+				else
+					CastSpell(_R)
+				end
+			end
+		elseif Settings.combo.useR == 3 then
+			if VIP_USER and Settings.misc.packets then
+				Packet("S_CAST", {spellId = _R}):send()
+			else
+				CastSpell(_R)
+			end
 		end
 	end
 end
@@ -335,7 +374,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	if _G.UseSkinHack and VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
@@ -366,11 +405,11 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
-		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "E + W + Q", "W + Q + E" })
+		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "E + W + Q", "W + E + Q" })
 		Settings.combo:addParam("useQ", "Use "..SkillQ.name.." (Q) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 1, { "Killable", "Always" })
+		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 1, { "Killable", "Don't waste", "Always" })
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
 	
@@ -408,15 +447,15 @@ function Menu()
 		Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("Text", "Draw Text on Target", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("qDraw", "Draw "..SkillQ.name.." (Q) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("qColor", "Draw "..SkillQ.name.." (Q) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("qColor", "Draw "..SkillQ.name.." (Q) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("wDraw", "Draw "..SkillW.name.." (W) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("eDraw", "Draw "..SkillE.name.." (E) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("rDraw", "Draw "..SkillR.name.." (R) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		
 		Settings.drawing:addSubMenu("Lag Free Circles", "lfc")	
 			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
@@ -424,6 +463,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 4, { "Renegade", "Crimson Elite", "Dragonblade", "Classic" })
 
 	
