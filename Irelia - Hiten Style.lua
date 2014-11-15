@@ -1,9 +1,9 @@
-local version = "1.18"
+local version = "1.19"
 
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
-		Version: 1.18
+		Version: 1.19
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -123,9 +123,19 @@ function OnDraw()
 		if Settings.drawing.Target and Target ~= nil then
 			DrawCircle(Target.x, Target.y, Target.z, 70, 0xCE00FF)
 		end
-		
+
 		if Settings.drawing.myHero then
 			DrawCircle(myHero.x, myHero.y, myHero.z, TrueRange(), RGB(Settings.drawing.myColor[2], Settings.drawing.myColor[3], Settings.drawing.myColor[4]))
+		end
+		
+		if Settings.drawing.showStunnable and SkillE.ready then
+			for _, enemy in ipairs(GetEnemyHeroes()) do
+				if ValidTarget(enemy, 2000) and enemy.visible then
+					if (myHero.health / myHero.maxHealth) < (enemy.health / enemy.maxHealth) then
+						DrawText3D(tostring("Stunnable"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
+					end
+				end
+			end
 		end
 	end
 end
@@ -353,6 +363,7 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Draw Settings", "drawing")	
 		Settings.drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
 		Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
+		Settings.drawing:addParam("showStunnable", "Draw Stun Status on Enemies", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
 		Settings.drawing:addParam("qDraw", "Draw "..SkillQ.name.." (Q) Range", SCRIPT_PARAM_ONOFF, true)
