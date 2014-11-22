@@ -1,9 +1,9 @@
-local version = "1.07"
+local version = "1.08"
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.07
+		Version: 1.08
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -14,7 +14,7 @@ if myHero.charName ~= "Corki" then return end
 _G.UseUpdater = true
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
 }
 
@@ -300,7 +300,7 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
-	SOWi:ForceTarget(Target)
+	SxOrb:ForceTarget(Target)
 	
 	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
@@ -374,7 +374,7 @@ function Menu()
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillR.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Corki"
@@ -391,7 +391,6 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillR.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SOWi = SOW(VP)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
