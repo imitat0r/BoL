@@ -1,9 +1,9 @@
-local version = "1.19"
+local version = "1.20"
 
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
-		Version: 1.19
+		Version: 1.20
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -457,43 +457,45 @@ function Variables()
 	
 	if not TwistedTreeline then
 		JungleMobNames = { 
-			["Wolf8.1.2"]			= true,
-			["Wolf8.1.3"]			= true,
-			["YoungLizard7.1.2"]	= true,
-			["YoungLizard7.1.3"]	= true,
-			["LesserWraith9.1.3"]	= true,
-			["LesserWraith9.1.2"]	= true,
-			["LesserWraith9.1.4"]	= true,
-			["YoungLizard10.1.2"]	= true,
-			["YoungLizard10.1.3"]	= true,
-			["SmallGolem11.1.1"]	= true,
-			["Wolf2.1.2"]			= true,
-			["Wolf2.1.3"]			= true,
-			["YoungLizard1.1.2"]	= true,
-			["YoungLizard1.1.3"]	= true,
-			["LesserWraith3.1.3"]	= true,
-			["LesserWraith3.1.2"]	= true,
-			["LesserWraith3.1.4"]	= true,
-			["YoungLizard4.1.2"]	= true,
-			["YoungLizard4.1.3"]	= true,
-			["SmallGolem5.1.1"]		= true
+			["SRU_MurkwolfMini2.1.3"]	= true,
+			["SRU_MurkwolfMini2.1.2"]	= true,
+			["SRU_MurkwolfMini8.1.3"]	= true,
+			["SRU_MurkwolfMini8.1.2"]	= true,
+			["SRU_BlueMini1.1.2"]		= true,
+			["SRU_BlueMini7.1.2"]		= true,
+			["SRU_BlueMini21.1.3"]		= true,
+			["SRU_BlueMini27.1.3"]		= true,
+			["SRU_RedMini10.1.2"]		= true,
+			["SRU_RedMini10.1.3"]		= true,
+			["SRU_RedMini4.1.2"]		= true,
+			["SRU_RedMini4.1.3"]		= true,
+			["SRU_KrugMini11.1.1"]		= true,
+			["SRU_KrugMini5.1.1"]		= true,
+			["SRU_RazorbeakMini9.1.2"]	= true,
+			["SRU_RazorbeakMini9.1.3"]	= true,
+			["SRU_RazorbeakMini9.1.4"]	= true,
+			["SRU_RazorbeakMini3.1.2"]	= true,
+			["SRU_RazorbeakMini3.1.3"]	= true,
+			["SRU_RazorbeakMini3.1.4"]	= true
 		}
 		
 		FocusJungleNames = {
-			["Dragon6.1.1"]			= true,
-			["Worm12.1.1"]			= true,
-			["GiantWolf8.1.1"]		= true,
-			["AncientGolem7.1.1"]	= true,
-			["Wraith9.1.1"]			= true,
-			["LizardElder10.1.1"]	= true,
-			["Golem11.1.2"]			= true,
-			["GiantWolf2.1.1"]		= true,
-			["AncientGolem1.1.1"]	= true,
-			["Wraith3.1.1"]			= true,
-			["LizardElder4.1.1"]	= true,
-			["Golem5.1.2"]			= true,
-			["GreatWraith13.1.1"]	= true,
-			["GreatWraith14.1.1"]	= true
+			["SRU_Blue1.1.1"]			= true,
+			["SRU_Blue7.1.1"]			= true,
+			["SRU_Murkwolf2.1.1"]		= true,
+			["SRU_Murkwolf8.1.1"]		= true,
+			["SRU_Gromp13.1.1"]			= true,
+			["SRU_Gromp14.1.1"]			= true,
+			["Sru_Crab16.1.1"]			= true,
+			["Sru_Crab15.1.1"]			= true,
+			["SRU_Red10.1.1"]			= true,
+			["SRU_Red4.1.1"]			= true,
+			["SRU_Krug11.1.2"]			= true,
+			["SRU_Krug5.1.2"]			= true,
+			["SRU_Razorbeak9.1.1"]		= true,
+			["SRU_Razorbeak3.1.1"]		= true,
+			["SRU_Dragon6.1.1"]			= true,
+			["SRU_Baron12.1.1"]			= true
 		}
 	else
 		FocusJungleNames = {
