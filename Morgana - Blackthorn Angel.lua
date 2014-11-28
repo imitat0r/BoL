@@ -1,9 +1,9 @@
-local version = "1.10"
+local version = "1.11"
 
 --[[
 	Morgana - Blackthorn Angel
 		Author: Draconis
-		Version: 1.10
+		Version: 1.11
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -186,6 +186,7 @@ end
 
 function CastW(unit)
 	if Settings.combo.useW == 1 then return end
+	if (ComboKey and not TargetHaveBuff("DarkBindingMissile", unit) and Settings.combo.comboQ) or (HarassKey and not TargetHaveBuff("DarkBindingMissile", unit) and Settings.harass.harassQ) then return end
 	
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then
 	AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
@@ -296,6 +297,7 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
+		Settings.combo:addParam("comboQ", "Wait with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 2, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) with (R)", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
@@ -306,6 +308,7 @@ function Menu()
 		Settings.harass:addParam("harassMode", "Choose Harass Mode", SCRIPT_PARAM_LIST, 1, { "Q + W", "Q" })
 		Settings.harass:addParam("useQ", "Use "..SkillQ.name.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("useW", "Use "..SkillW.name.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
+		Settings.harass:addParam("harassQ", "Wait with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, true)
 		Settings.harass:addParam("harassMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.harass:permaShow("harassKey")
 		
@@ -340,7 +343,7 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 6, { "Exiled Morgana", "Sinful Succulence Morgana", "Blade Mistress Morgana", "Blackthorn Morgana", "Ghost Bride Morgana", "Classic" })
+		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 6, { "Exiled", "Sinful Succulence", "Blade Mistress", "Blackthorn", "Ghost Bride", "Victorious", "Classic" })
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
 		SOWi:LoadToMenu(Settings.Orbwalking)
