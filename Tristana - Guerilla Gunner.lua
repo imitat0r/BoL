@@ -1,9 +1,9 @@
-local version = "1.08"
+local version = "1.09"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.08
+		Version: 1.09
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -12,6 +12,7 @@ local version = "1.08"
 if myHero.charName ~= "Tristana" then return end
 
 _G.UseUpdater = true
+_G.SkinHack = true
 
 local REQUIRED_LIBS = {
 	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
@@ -281,7 +282,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	if _G.SkinHack and VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
