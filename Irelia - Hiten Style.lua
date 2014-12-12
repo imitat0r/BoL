@@ -1,9 +1,9 @@
-local version = "1.20"
+local version = "1.201"
 
 --[[
 	Irelia - Hiten Style
 		Author: Draconis
-		Version: 1.20
+		Version: 1.201
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -303,7 +303,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
