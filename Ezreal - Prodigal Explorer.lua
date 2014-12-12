@@ -1,9 +1,9 @@
-local version = "1.09"
+local version = "1.091"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.09
+		Version: 1.091
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -336,7 +336,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList and _G.SkinHack then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList and _G.SkinHack then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	SetRRange()
