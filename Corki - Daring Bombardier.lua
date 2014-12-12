@@ -1,9 +1,9 @@
-local version = "1.09"
+local version = "1.091"
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.09
+		Version: 1.091
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -302,7 +302,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SxOrb:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	if TargetHaveBuff("mbcheck2", myHero) then TheBigOne = true else TheBigOne = false end
