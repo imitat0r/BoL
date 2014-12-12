@@ -1,9 +1,9 @@
-local version = "1.22"
+local version = "1.221"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.22
+		Version: 1.221
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -363,7 +363,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	if Settings.combo.comboSwitch and Settings.combo.comboMode == 1 then
