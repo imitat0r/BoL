@@ -1,9 +1,9 @@
-local version = "1.07"
+local version = "1.071"
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.07
+		Version: 1.071
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -374,7 +374,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if _G.UseSkinHack and VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if _G.UseSkinHack and VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
