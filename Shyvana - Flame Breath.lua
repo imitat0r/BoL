@@ -1,9 +1,9 @@
-local version = "1.06"
+local version = "1.061"
 
 --[[
 	Shyvana - Flame Breath
 		Author: Draconis
-		Version: 1.06
+		Version: 1.061
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -281,7 +281,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SxOrb:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
