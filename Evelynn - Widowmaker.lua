@@ -1,9 +1,9 @@
-local version = "1.24"
+local version = "1.241"
 
 --[[
 	Evelynn - Widowmaker
 		Author: Draconis
-		Version: 1.24
+		Version: 1.241
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -291,7 +291,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
