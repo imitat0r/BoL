@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.031"
 
 --[[
 	Aatrox - Blood Prince
 		Author: Draconis
-		Version: 1.03
+		Version: 1.031
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -279,7 +279,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
