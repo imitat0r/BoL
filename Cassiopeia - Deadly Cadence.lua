@@ -1,9 +1,9 @@
-local version = "1.07"
+local version = "1.071"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.07
+		Version: 1.071
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -110,9 +110,6 @@ function OnTick()
 	end	
 	
 	Checks()
-	
-	autoLevelSetSequence(levelSequence)
-	Sequence()
 	
 	CastAutoR()
 end
@@ -355,7 +352,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SxOrb:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
@@ -459,7 +456,6 @@ function Menu()
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Desperada", "Siren", "Mythic", "Jade Fang", "Classic" })
-		Settings.misc:addParam("levelSkills", "Auto level spells", SCRIPT_PARAM_LIST, 1, { "No", "Mid", "Support", "Top" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
@@ -485,7 +481,6 @@ function Variables()
 	JungleFocusMobs = {}
 	
 	lastSkin = 0
-	levelSequence = nil
 	
 	if myHero:GetSpellData(SUMMONER_1).name:find(Ignite.name) then
 		Ignite.slot = SUMMONER_1
@@ -835,16 +830,4 @@ function isPoisoned(target)
 		end
 	end
 	return false
-end
-
-function Sequence()
-	if Settings.misc.levelSkills == 1 then
-		levelSequence = nil
-	elseif Settings.misc.levelSkills == 2 then
-		levelSequence = {1,3,3,2,3,4,3,1,3,1,4,1,1,2,2,4,2,2} -- Mid
-	elseif Settings.misc.levelSkills == 3 then
-		levelSequence = {1,3,1,2,1,4,1,3,1,3,4,3,3,2,2,4,2,2} -- Support
-	elseif Settings.misc.levelSkills == 4 then
-		levelSequence = {1,2,1,3,1,4,1,3,1,3,4,3,3,2,2,4,2,2} -- Top
-	end
 end
