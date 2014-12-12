@@ -1,9 +1,9 @@
-local version = "1.11"
+local version = "1.111"
 
 --[[
 	Morgana - Blackthorn Angel
 		Author: Draconis
-		Version: 1.11
+		Version: 1.111
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -271,7 +271,7 @@ function Checks()
 	Target = GetCustomTarget()
 	SOWi:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
+	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
