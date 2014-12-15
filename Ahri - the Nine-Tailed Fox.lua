@@ -1,9 +1,9 @@
-local version = "1.201"
+local version = "1.202"
 
 --[[
 	Ahri - the Nine-Tailed Fox
 		Author: Draconis
-		Version: 1.201
+		Version: 1.202
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -16,7 +16,6 @@ _G.UseUpdater = true
 local REQUIRED_LIBS = {
 	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
-	["Prodiction"] = "https://bitbucket.org/Klokje/public-klokjes-bol-scripts/raw/ec830facccefb3b52212dba5696c08697c3c2854/Test/Prodiction/Prodiction.lua"
 }
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
@@ -31,8 +30,7 @@ end
 
 for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
 	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
-		if DOWNLOAD_LIB_NAME ~= "Prodiction" then require(DOWNLOAD_LIB_NAME) end
-		if DOWNLOAD_LIB_NAME == "Prodiction" and VIP_USER then require(DOWNLOAD_LIB_NAME) end
+		require(DOWNLOAD_LIB_NAME)
 	else
 		DOWNLOADING_LIBS = true
 		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
@@ -207,36 +205,20 @@ end
 
 function CastQ(unit)	
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		if Settings.misc.prediction == 1 then
-			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
+		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
 					
-			if HitChance >= 2 then
-				CastSpell(_Q, CastPosition.x, CastPosition.z)
-			end
-		elseif Settings.misc.prediction == 2 and VIP_USER then
-			local pos, info = Prodiction.GetPrediction(unit, SkillQ.range, SkillQ.speed, SkillQ.delay, SkillQ.width)
-			
-			if pos ~= nil then
-				CastSpell(_Q, pos.x, pos.z)
-			end
+		if HitChance >= 2 then
+			CastSpell(_Q, CastPosition.x, CastPosition.z)
 		end
 	end
 end
 
 function CastE(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillE.range and SkillE.ready then
-		if Settings.misc.prediction == 1 then
-			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
-				
-			if HitChance >= 2 then
-				CastSpell(_E, CastPosition.x, CastPosition.z)
-			end
-		elseif Settings.misc.prediction == 2 and VIP_USER then
-			local pos, info = Prodiction.GetPrediction(unit, SkillE.range, SkillE.speed, SkillE.delay, SkillE.width)
+		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero, true)
 			
-			if pos ~= nil and not info.mCollision() then
-				CastSpell(_E, pos.x, pos.z)
-			end
+		if HitChance >= 2 then
+			CastSpell(_E, CastPosition.x, CastPosition.z)
 		end
 	end
 end
@@ -418,7 +400,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
 		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Dynasty Ahri", "Midnight Ahri", "Foxfire Ahri", "Popstar Ahri", "Classic" })
 
 	
