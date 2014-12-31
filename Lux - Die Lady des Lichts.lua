@@ -16,7 +16,7 @@ _G.UseUpdater = true
 local REQUIRED_LIBS = {
 	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
-	["Sourcelib"] = "https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",
+	["Sourcelib"] = "https://raw.githubusercontent.com/Dienofail/BoL/master/common/SourceLib.lua",
 }
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
