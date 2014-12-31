@@ -1,9 +1,9 @@
-local version = "1.02"
+local version = "1.03"
 
 --[[
 	Lux - Die Lady des Lichts
 		Author: Draconis
-		Version: 1.02
+		Version: 1.03
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -250,10 +250,10 @@ function KillSteal()
 		if ValidTarget(enemy) and enemy.visible then
 			if Settings.ks.Q and enemy.health <= qDmg and GetDistance(enemy) <= SkillQ.range then
 				CastQ(enemy)
+			elseif Settings.ks.E and enemy.health <= eDmg and SkillE.ready and GetDistance(enemy) <= SkillE.range then
+				CastE(enemy)
 			elseif (Settings.ks.Q and Settings.ks.E) and enemy.health <= qDmg + eDmg and SkillQ.ready and SkillE.ready and GetDistance(enemy) <= SkillE.range then
 				CastQ(enemy)
-				CastE(enemy)
-			elseif Settings.ks.E and enemy.health <= eDmg and SkillE.ready and GetDistance(enemy) <= SkillE.range then
 				CastE(enemy)
 			elseif Settings.ks.R and enemy.health <= rDmg and GetDistance(enemy) <= SkillR.range then
 				CastR(enemy)
@@ -304,7 +304,7 @@ function Checks()
 	
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
-	if SkillE.pPos ~= nil and GetDistance(Target, SkillE.pPos) < SkillE.width then CastSpell(_E) end
+	if (SkillE.pPos ~= nil and Target ~= nil) and GetDistance(Target, SkillE.pPos) < SkillE.width then CastSpell(_E) end
 end
 
 function IsMyManaLow(mode)
