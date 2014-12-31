@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.1"
 
 --[[
 	Lux - Die Lady des Lichts
 		Author: Draconis
-		Version: 1.03
+		Version: 1.1
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -250,8 +250,6 @@ function KillSteal()
 		if ValidTarget(enemy) and enemy.visible then
 			if Settings.ks.Q and enemy.health <= qDmg and GetDistance(enemy) <= SkillQ.range then
 				CastQ(enemy)
-			elseif Settings.ks.E and enemy.health <= eDmg and SkillE.ready and GetDistance(enemy) <= SkillE.range then
-				CastE(enemy)
 			elseif (Settings.ks.Q and Settings.ks.E) and enemy.health <= qDmg + eDmg and SkillQ.ready and SkillE.ready and GetDistance(enemy) <= SkillE.range then
 				CastQ(enemy)
 				CastE(enemy)
