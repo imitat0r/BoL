@@ -30,7 +30,7 @@ JunglePos = {
 function OnLoad()
 	Settings = scriptConfig("Jungle Positions", "dJunglePos")
 
-	Settings:addParam("JunglePositions", "Show Jungle Positions", SCRIPT_PARAM_ONOFF, z = true)
+	Settings:addParam("JunglePositions", "Show Jungle Positions", SCRIPT_PARAM_ONOFF, true)
 	Settings:addParam("JunglePositionsMove", "Move to Jungle Positions", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("A"))
 	Settings:addParam("JunglePositionsRange", "Range for Jungle Positions", SCRIPT_PARAM_SLICE, 1000, 0, 2000, 0)
 end
@@ -49,8 +49,39 @@ function OnDraw()
 	if Settings.JunglePositions then
 		for _, Position in pairs(JunglePos) do
 			if GetDistance(Position, myHero) < Settings.JunglePositionsRange then
-				DrawCircle(Position.x, Position.y, Position.z, 80, RGB(255, 255, 255))
+				DrawCircle2(Position.x, Position.y, Position.z, 80, RGB(255, 255, 255))
 			end
 		end
 	end
+end
+
+-- Barasia, vadash, viseversa
+function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
+  radius = radius or 300
+  quality = math.max(8,round(180/math.deg((math.asin((chordlength/(2*radius)))))))
+  quality = 2 * math.pi / quality
+  radius = radius*.92
+  
+  local points = {}
+  for theta = 0, 2 * math.pi + quality, quality do
+    local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+    points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+  end
+  
+  DrawLines2(points, width or 1, color or 4294967295)
+end
+
+function round(num) 
+  if num >= 0 then return math.floor(num+.5) else return math.ceil(num-.5) end
+end
+
+function DrawCircle2(x, y, z, radius, color)
+  local vPos1 = Vector(x, y, z)
+  local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+  local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+  local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+  
+  if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
+    DrawCircleNextLvl(x, y, z, radius, 1, color, 75)
+  end
 end
