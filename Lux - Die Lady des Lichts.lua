@@ -1,9 +1,9 @@
-local version = "1.1"
+local version = "1.11"
 
 --[[
 	Lux - Die Lady des Lichts
 		Author: Draconis
-		Version: 1.1
+		Version: 1.11
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -196,7 +196,7 @@ end
 
 function CastQ(unit)	
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero)
+		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
 				
 		if HitChance >= 2 then
 			CastSpell(_Q, CastPosition.x, CastPosition.z)
