@@ -1,9 +1,9 @@
-local version = "1.031"
+local version = "1.04"
 
 --[[
 	Aatrox - Blood Prince
 		Author: Draconis
-		Version: 1.031
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -175,6 +175,9 @@ function LaneClear()
 							CastSpell(_E, BestPos.x, BestPos.z)
 						end
 				end
+				
+				if GetDistance(minion) <= Items.TMT.range then CastItem(3074) end
+				if GetDistance(minion) <= Items.TMT.range then CastItem(3077) end
 			end		 
 		end
 	end
@@ -191,6 +194,9 @@ function JungleClear()
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range and SkillQ.ready then
 				CastSpell(_Q, JungleMob)
 			end
+			
+			if GetDistance(JungleMob) <= Items.TMT.range then CastItem(3074) end
+			if GetDistance(JungleMob) <= Items.TMT.range then CastItem(3077) end
 		end
 	end
 end
