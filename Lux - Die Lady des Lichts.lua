@@ -1,9 +1,9 @@
-local version = "1.01"
+local version = "1.02"
 
 --[[
 	Lux - Die Lady des Lichts
 		Author: Draconis
-		Version: 1.01
+		Version: 1.02
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -211,14 +211,18 @@ function CastE(unit)
 	local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillE.delay, SkillE.width, SkillE.range, SkillE.speed, myHero)
 	
 		if MainTargetHitChance >= 2 then
-			if Settings.combo.useE == 2 and nTargets >= 1 then
-				CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
-			elseif Settings.combo.useE == 3 and nTargets >= 2 then
-				CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
-			elseif Settings.combo.useE == 4 and nTargets >= 3 then
-				CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
-			elseif Settings.combo.useE == 5 and nTargets >= 4 then
-				CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
+			if ComboKey then
+				if Settings.combo.useE == 2 and nTargets >= 1 then
+					CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useE == 3 and nTargets >= 2 then
+					CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useE == 4 and nTargets >= 3 then
+					CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useE == 5 and nTargets >= 4 then
+					CastSpell(_E, AOECastPosition.x, AOECastPosition.z) 
+				end
+			else
+				CastSpell(_E, AOECastPosition.x, AOECastPosition.z)
 			end
 		end
 		if unit.type ~= myHero.type and TargetHaveBuff("LuxLightStrikeKugel", unit) then CastSpell(_E) end
