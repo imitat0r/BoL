@@ -179,7 +179,7 @@ function LaneClear()
 end
 
 function JungleClear()
-	if JungleClearKey then
+	if JungleClearKey and not IsMyManaLow("Jungle") then
 		local JungleMob = GetJungleMob()
 		
 		if JungleMob ~= nil then
@@ -318,6 +318,12 @@ function IsMyManaLow(mode)
 		else
 			return false
 		end
+	elseif mode == "Jungle" then
+		if myHero.mana < (myHero.maxMana * ( Settings.jungle.jungleMana / 100)) then
+			return true
+		else
+			return false
+		end
 	elseif mode == "PushAway" then
 		if myHero.mana < (myHero.maxMana * ( Settings.pushAway.pushAwayMana / 100)) then
 			return true
@@ -359,6 +365,7 @@ function Menu()
 		Settings.jungle:addParam("jungleKey", "Jungle Clear Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("V"))
 		Settings.jungle:addParam("jungleQ", "Clear with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
 		Settings.jungle:addParam("jungleE", "Clear with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
+		Settings.jungle:addParam("jungleMana", "Min. Mana Percent: ", SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 		Settings.jungle:permaShow("jungleKey")
 		
 	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
