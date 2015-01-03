@@ -1,9 +1,9 @@
-local version = "1.0"
+local version = "1.1"
 
 --[[
 	Graves - Der Gesetzlose
 		Author: Draconis
-		Version: 1.0
+		Version: 1.1
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -138,20 +138,41 @@ end
 
 function Combo(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
+		if Settings.combo.rangeAA and GetDistance(unit) >= TrueRange() then return end
+		
 		if Settings.combo.comboItems then
 			UseItems(unit)
 		end
 		
 		if Settings.combo.useR then CastR(unit) end
+		
+		if Settings.combo.useE then
+			if Settings.misc.resetE then
+				SxOrb:RegisterAfterAttackCallback(function(unit) if ComboKey then CastE(unit) end end)
+			else
+				CastE(unit)
+			end
+		end
+		
+		if Settings.misc.resetQ then
+			SxOrb:RegisterAfterAttackCallback(function(unit) if ComboKey then CastQ(unit) end end)
+		else
+			CastQ(unit)
+		end
+		
 		if Settings.combo.useW then CastW(unit) end
-		if Settings.combo.useE then CastE(unit) end
-		CastQ(unit)
 	end
 end
 
 function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow("Harass") then
-		if Settings.harass.useQ then CastQ(unit) end
+		if Settings.harass.useQ then
+			if Settings.misc.resetQ then
+				SxOrb:RegisterAfterAttackCallback(function(unit) if HarassKey then CastQ(unit) end end)
+			else
+				CastQ(unit)
+			end
+		end
 		if Settings.harass.useW then CastW(unit) end
 	end
 end
@@ -197,7 +218,7 @@ end
 
 function CastQ(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillQ.delay, SkillQ.angle, SkillQ.range, SkillQ.speed, myHero, true)
+		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillQ.delay, SkillQ.angle, SkillQ.range, SkillQ.speed, myHero)
 				
 		if mainHitChance >= 2 then
 			CastSpell(_Q, mainCastPosition.x, mainCastPosition.z)
@@ -206,8 +227,8 @@ function CastQ(unit)
 end
 
 function CastW(unit)
-	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then
-	local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
+	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then		
+		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 	
 		if MainTargetHitChance >= 2 then
 			CastSpell(_W, AOECastPosition.x, AOECastPosition.z)
@@ -230,7 +251,7 @@ end
 function CastR(unit)
 	if ComboKey and Settings.combo.useR == 1 then return end
 	
-	if unit ~= nil and SkillR.ready then
+	if unit ~= nil and SkillR.ready and GetDistance(unit) <= SkillR.range then
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
 			
 		if MainTargetHitChance >= 2 then
@@ -251,9 +272,19 @@ function CastR(unit)
 	end
 end
 
+function _CastR(unit)	
+	if unit ~= nil and SkillR.ready and GetDistance(unit) <= SkillR.range then
+		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
+			
+		if MainTargetHitChance >= 2 then
+			CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
+		end
+	end
+end
+
 function KillSteal()
 	for _, enemy in ipairs(GetEnemyHeroes()) do
-		if ValidTarget(enemy) and enemy.visible then
+		if ValidTarget(enemy) and enemy.visible and not enemy.dead then
 			local qDmg = getDmg("Q", enemy, myHero)
 			local wDmg = getDmg("W", enemy, myHero)
 			local rDmg = getDmg("R", enemy, myHero)
@@ -265,10 +296,10 @@ function KillSteal()
 				CastQ(enemy)
 			elseif Settings.ks.ksW and enemy.health <= wDmg then
 				CastW(enemy)
-			elseif Settings.ks.ksR and enemy.health <= rDmg and GetDistance(enemy) <= SkillR.range then
-				CastR(enemy)
+			elseif Settings.ks.ksR and enemy.health <= rDmg then
+				_CastR(enemy)
 			end
-
+			
 			if Settings.ks.autoIgnite then
 				AutoIgnite(enemy)
 			end
@@ -277,7 +308,7 @@ function KillSteal()
 end
 
 function AutoIgnite(unit)
-	if ValidTarget(unit, Ignite.range) and unit.health <= 50 + (20 * myHero.level) then
+	if ValidTarget(unit, Ignite.range) and unit.health <= getDmg("IGNITE", unit, myHero) then
 		if Ignite.ready then
 			CastSpell(Ignite.slot, unit)
 		end
@@ -339,6 +370,7 @@ function Menu()
 		Settings.combo:addParam("useW", "Use "..SkillW.name.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:addParam("useE", "Use "..SkillE.name.." (E) in Combo", SCRIPT_PARAM_LIST, 1, { "To mouse", "Toward enemy", "No"})
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 3, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
+		Settings.combo:addParam("rangeAA", "Use spells only in Attack range", SCRIPT_PARAM_ONOFF, false)
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
 	
@@ -391,9 +423,14 @@ function Menu()
 			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
 			Settings.drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
-	
+			
+	Settings:addSubMenu("["..myHero.charName.."] - Miscellaneous Settings", "misc")
+		Settings.misc:addParam("resetQ", "Use "..SkillQ.name.." (Q) to reset AA", SCRIPT_PARAM_ONOFF, true)
+		Settings.misc:addParam("resetE", "Use "..SkillE.name.." (E) to reset AA", SCRIPT_PARAM_ONOFF, true)
+		
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
 		SxOrb:LoadToMenu(Settings.Orbwalking)
+		
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillR.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Graves"
