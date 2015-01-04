@@ -1,9 +1,9 @@
-local version = "1.11"
+local version = "1.12"
 
 --[[
 	Graves - Der Gesetzlose
 		Author: Draconis
-		Version: 1.11 BETA
+		Version: 1.12
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -145,34 +145,12 @@ function Combo(unit)
 		end
 		
 		if Settings.combo.useR then CastR(unit) end
-		
-		if Settings.combo.useE then
-			if Settings.misc.resetE then
-				SxOrb:RegisterAfterAttackCallback(function(unit) if ComboKey then CastE(unit) end end)
-			else
-				CastE(unit)
-			end
-		end
-		
-		if Settings.misc.resetQ then
-			SxOrb:RegisterAfterAttackCallback(function(unit) if ComboKey then CastQ(unit) end end)
-		else
-			CastQ(unit)
-		end
-		
 		if Settings.combo.useW then CastW(unit) end
 	end
 end
 
 function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow("Harass") then
-		if Settings.harass.useQ then
-			if Settings.misc.resetQ then
-				SxOrb:RegisterAfterAttackCallback(function(unit) if HarassKey then CastQ(unit) end end)
-			else
-				CastQ(unit)
-			end
-		end
 		if Settings.harass.useW then CastW(unit) end
 	end
 end
@@ -445,6 +423,9 @@ function Variables()
 	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillW.range, myHero, MINION_SORT_HEALTH_ASC)
+	
+	SxOrb:RegisterAfterAttackCallback(function() if Settings.misc.resetE and ComboKey then CastE(Target) end end)
+	SxOrb:RegisterAfterAttackCallback(function() if Settings.misc.resetQ and ComboKey or HarassKey and Settings.harass.useQ then CastQ(Target) end end)
 	
 	VP = VPrediction()
 	
