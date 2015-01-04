@@ -1,9 +1,9 @@
-local version = "1.1"
+local version = "1.11"
 
 --[[
 	Graves - Der Gesetzlose
 		Author: Draconis
-		Version: 1.1
+		Version: 1.11 BETA
 		Copyright 2015
 			
 	Dependency: Standalone
