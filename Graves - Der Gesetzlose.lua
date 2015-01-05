@@ -1,9 +1,9 @@
-local version = "1.12"
+local version = "1.13"
 
 --[[
 	Graves - Der Gesetzlose
 		Author: Draconis
-		Version: 1.12
+		Version: 1.13
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -195,6 +195,7 @@ function JungleClear()
 end
 
 function CastQ(unit)
+	if HarassKey and IsMyManaLow("Harass") then return end
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
 		local mainCastPosition, mainHitChance, maxHit = VP:GetConeAOECastPosition(unit, SkillQ.delay, SkillQ.angle, SkillQ.range, SkillQ.speed, myHero)
 				
