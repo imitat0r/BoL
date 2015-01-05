@@ -1,9 +1,9 @@
-local version = "1.03"
+local version = "1.04"
 
 --[[
 	Malzahar - Prophet of the Void
 		Author: Draconis
-		Version: 1.03
+		Version: 1.04
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -172,8 +172,8 @@ end
 function Combo(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then	
 		CastQ(unit)
-		CastE(unit)
 		CastW(unit)
+		CastE(unit)
 		if Settings.combo.comboItems then UseItems(unit) end
 		if Settings.combo.useR then CastR(unit) end
 	end
@@ -279,12 +279,12 @@ function KillSteal()
 			local qDmg = getDmg("Q", enemy, myHero)
 			local eDmg = getDmg("E", enemy, myHero)
 			
-			if enemy.health <= qDmg then
+			if Settings.ks.Q and enemy.health <= qDmg then
 				CastQ(enemy)
-			elseif enemy.health <= (qDmg + eDmg) then
+			elseif Settings.ks.Q and Settings.ks.E and enemy.health <= (qDmg + eDmg) then
 				CastE(enemy)
 				CastQ(enemy)
-			elseif enemy.health <= eDmg then
+			elseif Settings.ks.E and enemy.health <= eDmg then
 				CastE(enemy)
 			end
 			
@@ -325,7 +325,6 @@ function Checks()
 	Target = GetCustomTarget()
 	SxOrb:ForceTarget(Target)
 	
-	if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 		
 	if NetherGrasp == true then
@@ -393,6 +392,8 @@ function Menu()
 		
 	Settings:addSubMenu("["..myHero.charName.."] - KillSteal Settings", "ks")
 		Settings.ks:addParam("killSteal", "Use Smart Kill Steal", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("Q", "Use "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
+		Settings.ks:addParam("E", "Use "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:addParam("autoIgnite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
 		Settings.ks:permaShow("killSteal")
 			
@@ -400,24 +401,20 @@ function Menu()
 		Settings.drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
 		Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("qDraw", "Draw "..SkillQ.name.." (Q) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("qColor", "Draw "..SkillQ.name.." (Q) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("qColor", "Draw "..SkillQ.name.." (Q) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("wDraw", "Draw "..SkillW.name.." (W) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("eDraw", "Draw "..SkillE.name.." (E) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("rDraw", "Draw "..SkillR.name.." (R) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("rColor", "Draw "..SkillR.name.." (R) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		
 		Settings.drawing:addSubMenu("Lag Free Circles", "lfc")	
 			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
 			Settings.drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
-	
-	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Vizier", "Shadow Prince", "Djinn", "Overlord", "Classic" })
-
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
 		SxOrb:LoadToMenu(Settings.Orbwalking)
@@ -440,9 +437,7 @@ function Variables()
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
-	lastSkin = 0
-	
+
 	NetherGrasp = false
 	
 	if GetGame().map.shortName == "twistedTreeline" then
@@ -651,38 +646,6 @@ function GetCustomTarget()
 	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
 	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
 	return TargetSelector.target
-end
-
--- shalzuth
-function GenModelPacket(champ, skinId)
-	p = CLoLPacket(0x97)
-	p:EncodeF(myHero.networkID)
-	p.pos = 1
-	t1 = p:Decode1()
-	t2 = p:Decode1()
-	t3 = p:Decode1()
-	t4 = p:Decode1()
-	p:Encode1(t1)
-	p:Encode1(t2)
-	p:Encode1(t3)
-	p:Encode1(bit32.band(t4,0xB))
-	p:Encode1(1)--hardcode 1 bitfield
-	p:Encode4(skinId)
-	for i = 1, #champ do
-		p:Encode1(string.byte(champ:sub(i,i)))
-	end
-	for i = #champ + 1, 64 do
-		p:Encode1(0)
-	end
-	p:Hide()
-	RecvPacket(p)
-end
-
-function ChooseSkin()
-	if Settings.misc.skinList ~= lastSkin then
-		lastSkin = Settings.misc.skinList
-		GenModelPacket("Malzahar", Settings.misc.skinList)
-	end
 end
 
 function GetBestLineFarmPosition(range, width, objects)
