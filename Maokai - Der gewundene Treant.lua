@@ -4,7 +4,7 @@ local version = "1.0"
 	Maokai - Der gewundene Treant
 		Author: Draconis
 		Version: 1.0
-		Copyright 2014
+		Copyright 2015
 			
 	Dependency: Standalone
 --]]
