@@ -1,10 +1,10 @@
-local version = "1.091"
+local version = "1.1"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.091
-		Copyright 2014
+		Version: 1.1
+		Copyright 2015
 			
 	Dependency: Standalone
 --]]
@@ -15,7 +15,7 @@ _G.UseUpdater = true
 _G.SkinHack = true
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
 	["Sourcelib"] = "https://raw.githubusercontent.com/TheRealSource/public/master/common/SourceLib.lua",
 }
@@ -280,7 +280,7 @@ function Checks()
 	Ignite.ready = (Ignite.slot ~= nil and myHero:CanUseSpell(Ignite.slot) == READY)
 	
 	Target = GetCustomTarget()
-	SOWi:ForceTarget(Target)
+	SxOrb:ForceTarget(Target)
 	
 	--if _G.SkinHack and VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
@@ -391,7 +391,7 @@ function Menu()
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillW.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Tristana"
@@ -408,7 +408,6 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillW.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SOWi = SOW(VP)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
