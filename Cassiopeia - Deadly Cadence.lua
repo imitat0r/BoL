@@ -1,9 +1,9 @@
-local version = "1.071"
+local version = "1.08"
 
 --[[
 	Cassiopeia - Deadly Cadence
 		Author: Draconis
-		Version: 1.071
+		Version: 1.08
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -225,7 +225,7 @@ end
 
 function CastW(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then
-		if Settings.combo.useW and isPoisoned(unit) then return end
+		if Settings.combo.useW and TargetHaveBuff("cassiopeianoxiousblastpoison", unit) then return end
 		
 		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 		
@@ -352,7 +352,6 @@ function Checks()
 	Target = GetCustomTarget()
 	SxOrb:ForceTarget(Target)
 	
-	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
 
@@ -455,7 +454,6 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Desperada", "Siren", "Mythic", "Jade Fang", "Classic" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
@@ -479,8 +477,6 @@ function Variables()
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
-	lastSkin = 0
 	
 	if myHero:GetSpellData(SUMMONER_1).name:find(Ignite.name) then
 		Ignite.slot = SUMMONER_1
@@ -716,38 +712,6 @@ function GetCustomTarget()
 	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
 	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
 	return TargetSelector.target
-end
-
--- shalzuth
-function GenModelPacket(champ, skinId)
-	p = CLoLPacket(0x97)
-	p:EncodeF(myHero.networkID)
-	p.pos = 1
-	t1 = p:Decode1()
-	t2 = p:Decode1()
-	t3 = p:Decode1()
-	t4 = p:Decode1()
-	p:Encode1(t1)
-	p:Encode1(t2)
-	p:Encode1(t3)
-	p:Encode1(bit32.band(t4,0xB))
-	p:Encode1(1)--hardcode 1 bitfield
-	p:Encode4(skinId)
-	for i = 1, #champ do
-		p:Encode1(string.byte(champ:sub(i,i)))
-	end
-	for i = #champ + 1, 64 do
-		p:Encode1(0)
-	end
-	p:Hide()
-	RecvPacket(p)
-end
-
-function ChooseSkin()
-	if Settings.misc.skinList ~= lastSkin then
-		lastSkin = Settings.misc.skinList
-		GenModelPacket("Cassiopeia", Settings.misc.skinList)
-	end
 end
 
 function GetBestCircularFarmPosition(range, radius, objects)
