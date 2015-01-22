@@ -15,6 +15,8 @@
 | Talon      | Working   | [Link](http://botoflegends.com/forum/topic/35338-script-w-vpredictions-talon-cutthroat/) |
 | Tristana   | Working   | [Link](http://botoflegends.com/forum/topic/35647-script-w-vpredictions-tristana-guerilla-gunner/) |
 | Aatrox     | Working   | [Link](http://botoflegends.com/forum/topic/36185-script-w-vpredictions-aatrox-blood-prince/) |
-| Rengar     | Working   | [Link](http://botoflegends.com/forum/topic/36823-script-w-vpredictions-rengar-unseen-predator-team-swagelo/) |
 | Ezreal     | Working   | [Link](http://botoflegends.com/forum/topic/38509-script-w-vpredictions-ezreal-prodigal-explorer/) |
+| Lux        | Working   | [Link](http://forum.botoflegends.com/topic/46198-script-w-vpredictions-lux-die-lady-des-lichts/) |
+| Maokai     | Working   | [Link](http://forum.botoflegends.com/topic/46654-script-w-vpredictions-maokai-der-gewundene-treant/) |
+| Graves     | Working   | [Link](http://forum.botoflegends.com/topic/46321-script-w-vpredictions-graves-der-gesetzlose/) |
 | Sion       | Exploit   | [Link](http://botoflegends.com/forum/topic/39140-exploit-sions-ultimate-control/) |
