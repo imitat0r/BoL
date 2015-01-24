@@ -1,9 +1,9 @@
-local version = "1.221"
+local version = "1.3"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.221
+		Version: 1.3
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -14,8 +14,7 @@ if myHero.charName ~= "Ryze" then return end
 _G.UseUpdater = true
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
-	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua"
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 }
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
@@ -170,12 +169,6 @@ function burstCombo(unit)
 			CastE(unit)
 		end
 	end
-	
-	if not Settings.combo.useAA then
-		SOWi:DisableAttacks()
-	elseif Settings.combo.useAA then
-		SOWi:EnableAttacks()
-	end
 end
 
 function longCombo(unit)
@@ -195,12 +188,6 @@ function longCombo(unit)
 			CastQ(unit)
 			CastE(unit)
 			CastQ(unit)
-	end
-	
-	if not Settings.combo.useAA then
-		SOWi:DisableAttacks()
-	elseif Settings.combo.useAA then
-		SOWi:EnableAttacks()
 	end
 end
 
@@ -361,9 +348,8 @@ function Checks()
 	enemyMinions:update()
 	
 	Target = GetCustomTarget()
-	SOWi:ForceTarget(Target)
+	SxOrb:ForceTarget(Target)
 	
-	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	if Settings.combo.comboSwitch and Settings.combo.comboMode == 1 then
@@ -459,10 +445,9 @@ function Menu()
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")	
 		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)	
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 9, { "Human Ryze", "Tribal Ryze", "Uncle Ryze", "Triumphant Ryze", "Professor Ryze", "Zombie Ryze", "Dark Crystal Ryze", "Pirate Ryze", "Classic" })
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 		
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillQ.range, DAMAGE_MAGIC, true)
 	TargetSelector.name = "Ryze"
@@ -478,13 +463,8 @@ function Variables()
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
-	VP = VPrediction()
-	SOWi = SOW(VP)
-	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
-	lastSkin = 0
 	
 	if GetGame().map.shortName == "twistedTreeline" then
 		TwistedTreeline = true 
@@ -710,38 +690,6 @@ function GetCustomTarget()
     if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
     if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
 	return TargetSelector.target
-end
-
--- shalzuth
-function GenModelPacket(champ, skinId)
-	p = CLoLPacket(0x97)
-	p:EncodeF(myHero.networkID)
-	p.pos = 1
-	t1 = p:Decode1()
-	t2 = p:Decode1()
-	t3 = p:Decode1()
-	t4 = p:Decode1()
-	p:Encode1(t1)
-	p:Encode1(t2)
-	p:Encode1(t3)
-	p:Encode1(bit32.band(t4,0xB))
-	p:Encode1(1)--hardcode 1 bitfield
-	p:Encode4(skinId)
-	for i = 1, #champ do
-		p:Encode1(string.byte(champ:sub(i,i)))
-	end
-	for i = #champ + 1, 64 do
-		p:Encode1(0)
-	end
-	p:Hide()
-	RecvPacket(p)
-end
-
-function ChooseSkin()
-	if Settings.misc.skinList ~= lastSkin then
-		lastSkin = Settings.misc.skinList
-		GenModelPacket("Ryze", Settings.misc.skinList)
-	end
 end
 
 -- Feez
