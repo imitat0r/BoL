@@ -1,9 +1,9 @@
-local version = "1.13"
+local version = "1.14"
 
 --[[
 	Graves - Der Gesetzlose
 		Author: Draconis
-		Version: 1.13
+		Version: 1.14
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -81,6 +81,7 @@ end
 function OnTick()
 	ComboKey = Settings.combo.comboKey
 	HarassKey = Settings.harass.harassKey
+	HarassToggle = Settings.harass.harassToggle
 	JungleClearKey = Settings.jungle.jungleKey
 	LaneClearKey = Settings.lane.laneKey
 	
@@ -88,7 +89,7 @@ function OnTick()
 		Combo(Target)
 	end
 	
-	if HarassKey then
+	if HarassKey or HarassToggle then
 		Harass(Target)
 	end
 	
