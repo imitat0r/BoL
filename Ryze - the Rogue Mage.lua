@@ -384,7 +384,6 @@ function Menu()
 		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "Burst", "Long" })
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 1, { "No", ">1 targets", ">2 targets", ">3 targets", ">4 targets" })
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:addParam("useAA", "Use AAs in Combo", SCRIPT_PARAM_ONOFF, false)
 		Settings.combo:permaShow("comboKey")
 		Settings.combo:permaShow("comboMode")
 	
