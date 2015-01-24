@@ -344,7 +344,6 @@ function Menu()
 		Settings.combo:addParam("comboMode", "Combo Mode", SCRIPT_PARAM_LIST, 1, { "REQW", "EQW"})
 		Settings.combo:addParam("useR", "Use "..SkillR.name.." (R) in Combo", SCRIPT_PARAM_LIST, 1, { "To mouse", "Toward enemy", "Don't use"})
 		Settings.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
-		Settings.combo:addParam("useAA", "Use AAs in Combo", SCRIPT_PARAM_ONOFF, true)
 		Settings.combo:permaShow("comboKey")
 		Settings.combo:permaShow("comboMode")
 	
