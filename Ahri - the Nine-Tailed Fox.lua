@@ -1,9 +1,9 @@
-local version = "1.202"
+local version = "1.3"
 
 --[[
 	Ahri - the Nine-Tailed Fox
 		Author: Draconis
-		Version: 1.202
+		Version: 1.3
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -14,7 +14,7 @@ if myHero.charName ~= "Ahri" then return end
 _G.UseUpdater = true
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
 }
 
@@ -153,10 +153,6 @@ function Combo(unit)
 			CastE(unit)
 			CastQ(unit)
 			CastW(unit)
-		end
-	
-		if not Settings.combo.useAA then
-			SOWi:DisableAttacks()
 		end
 	end
 end
@@ -320,10 +316,8 @@ function Checks()
 	TargetSelector:update()
 	Target = GetCustomTarget()
 	
-	SOWi:ForceTarget(Target)
-	SOWi:EnableAttacks()
+	SxOrb:ForceTarget(Target)
 	
-	--if VIP_USER and Settings.misc.skinList then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	if Settings.combo.comboSwitch and Settings.combo.comboMode == 1 then
@@ -399,12 +393,8 @@ function Menu()
 			Settings.drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
-	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 5, { "Dynasty Ahri", "Midnight Ahri", "Foxfire Ahri", "Popstar Ahri", "Classic" })
-
-	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillE.range, DAMAGE_MAGIC, true)
 	TargetSelector.name = "Ahri"
@@ -421,12 +411,9 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillE.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SOWi = SOW(VP)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
-	lastSkin = 0
 	
 	if GetGame().map.shortName == "twistedTreeline" then
 		TwistedTreeline = true 
@@ -656,38 +643,6 @@ function GetCustomTarget()
 	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
 	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
 	return TargetSelector.target
-end
-
--- shalzuth
-function GenModelPacket(champ, skinId)
-	p = CLoLPacket(0x97)
-	p:EncodeF(myHero.networkID)
-	p.pos = 1
-	t1 = p:Decode1()
-	t2 = p:Decode1()
-	t3 = p:Decode1()
-	t4 = p:Decode1()
-	p:Encode1(t1)
-	p:Encode1(t2)
-	p:Encode1(t3)
-	p:Encode1(bit32.band(t4,0xB))
-	p:Encode1(1)--hardcode 1 bitfield
-	p:Encode4(skinId)
-	for i = 1, #champ do
-		p:Encode1(string.byte(champ:sub(i,i)))
-	end
-	for i = #champ + 1, 64 do
-		p:Encode1(0)
-	end
-	p:Hide()
-	RecvPacket(p)
-end
-
-function ChooseSkin()
-	if Settings.misc.skinList ~= lastSkin then
-		lastSkin = Settings.misc.skinList
-		GenModelPacket("Ahri", Settings.misc.skinList)
-	end
 end
 
 function GetBestLineFarmPosition(range, width, objects)
