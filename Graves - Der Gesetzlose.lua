@@ -1,9 +1,9 @@
-local version = "1.14"
+local version = "1.15"
 
 --[[
 	Graves - Der Gesetzlose
 		Author: Draconis
-		Version: 1.14
+		Version: 1.15
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -152,6 +152,7 @@ end
 
 function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow("Harass") then
+		if Settings.harass.useQ then CastQ(unit) end
 		if Settings.harass.useW then CastW(unit) end
 	end
 end
