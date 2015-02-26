@@ -1,8 +1,8 @@
 local version = "1.15"
 
 --[[
-	Graves - Der Gesetzlose
-		Author: Draconis
+	Big Graves
+		Author: claudio
 		Version: 1.15
 		Copyright 2015
 			
