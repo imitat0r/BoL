@@ -1,8 +1,8 @@
 local version = "1.15"
 
 --[[
-	Graves - Der Gesetzlose
-		Author: Draconis
+	Big Graves 
+		Author: Claudio
 		Version: 1.15
 		Copyright 2015
 			
@@ -40,9 +40,9 @@ end
 
 if DOWNLOADING_LIBS then return end
 
-local UPDATE_NAME = "Graves - Der Gesetzlose"
+local UPDATE_NAME = "Big Graves"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Graves%20-%20Der%20Gesetzlose.lua" .. "?rand=" .. math.random(1, 10000)
+local UPDATE_PATH = "/ClaudioBoL/BoL/master/Graves%20-%20Der%20Gesetzlose.lua" .. "?rand=" .. math.random(1, 10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
@@ -72,7 +72,7 @@ end
 ------------------------------------------------------
 
 function OnLoad()
-	print("<b><font color=\"#6699FF\">Graves - Der Gesetzlose:</font></b> <font color=\"#FFFFFF\">Good luck and have fun!</font>")
+	print("<b><font color=\"#6699FF\">Big Graves:</font></b> <font color=\"#FFFFFF\">Good luck and have fun!</font>")
 	Variables()
 	Menu()
 	PriorityOnLoad()
@@ -344,7 +344,7 @@ function IsMyManaLow(mode)
 end
 
 function Menu()
-	Settings = scriptConfig("Graves - Der Gesetzlose "..version.."", "DraconisGraves")
+	Settings = scriptConfig("Big Graves "..version.."", "ClaudioGraves")
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Combo Settings", "combo")
 		Settings.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
