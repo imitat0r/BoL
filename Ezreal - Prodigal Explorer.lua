@@ -1,10 +1,10 @@
-local version = "1.091"
+local version = "1.1"
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.091
-		Copyright 2014
+		Version: 1.1
+		Copyright 2015
 			
 	Dependency: Standalone
 --]]
@@ -12,10 +12,9 @@ local version = "1.091"
 if myHero.charName ~= "Ezreal" then return end
 
 _G.UseUpdater = true
-_G.SkinHack = false
 
 local REQUIRED_LIBS = {
-	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
 	["Prodiction"] = "https://bitbucket.org/Klokje/public-klokjes-bol-scripts/raw/ec830facccefb3b52212dba5696c08697c3c2854/Test/Prodiction/Prodiction.lua"
 }
@@ -334,9 +333,8 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
-	SOWi:ForceTarget(Target)
+	SxOrb:ForceTarget(Target)
 	
-	--if VIP_USER and Settings.misc.skinList and _G.SkinHack then ChooseSkin() end
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
 	SetRRange()
@@ -438,11 +436,10 @@ function Menu()
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
 		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
-		Settings.misc:addParam("skinList", "Choose your skin", SCRIPT_PARAM_LIST, 8, { "Nottingham", "Striker", "Frosted", "Explorer", "Pulsefire", "TPA", "Debonair", "Classic" })
 
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SOWi:LoadToMenu(Settings.Orbwalking)
+		SxOrb:LoadToMenu(Settings.Orbwalking)
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillQ.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Ezreal"
@@ -459,12 +456,9 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SOWi = SOW(VP)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
-	lastSkin = 0
 	
 	if GetGame().map.shortName == "twistedTreeline" then
 		TwistedTreeline = true 
@@ -694,38 +688,6 @@ function GetCustomTarget()
 	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
 	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
 	return TargetSelector.target
-end
-
--- shalzuth
-function GenModelPacket(champ, skinId)
-	p = CLoLPacket(0x97)
-	p:EncodeF(myHero.networkID)
-	p.pos = 1
-	t1 = p:Decode1()
-	t2 = p:Decode1()
-	t3 = p:Decode1()
-	t4 = p:Decode1()
-	p:Encode1(t1)
-	p:Encode1(t2)
-	p:Encode1(t3)
-	p:Encode1(bit32.band(t4,0xB))
-	p:Encode1(1)--hardcode 1 bitfield
-	p:Encode4(skinId)
-	for i = 1, #champ do
-		p:Encode1(string.byte(champ:sub(i,i)))
-	end
-	for i = #champ + 1, 64 do
-		p:Encode1(0)
-	end
-	p:Hide()
-	RecvPacket(p)
-end
-
-function ChooseSkin()
-	if Settings.misc.skinList ~= lastSkin then
-		lastSkin = Settings.misc.skinList
-		GenModelPacket("Ezreal", Settings.misc.skinList)
-	end
 end
 
 -- Barasia, vadash, viseversa
