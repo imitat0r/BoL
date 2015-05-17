@@ -1,9 +1,9 @@
-local version = "1.3"
+local version = "1.4"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.3
+		Version: 1.4
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -11,60 +11,8 @@ local version = "1.3"
 
 if myHero.charName ~= "Ryze" then return end
 
-_G.UseUpdater = true
-
-local REQUIRED_LIBS = {
-	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
-}
-
-local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
-
-function AfterDownload()
-	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
-	if DOWNLOAD_COUNT == 0 then
-		DOWNLOADING_LIBS = false
-		print("<b><font color=\"#6699FF\">Ryze - the Rogue Mage:</font></b> <font color=\"#FFFFFF\">Required libraries downloaded successfully, please reload (double F9).</font>")
-	end
-end
-
-for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
-	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
-		require(DOWNLOAD_LIB_NAME)
-	else
-		DOWNLOADING_LIBS = true
-		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
-		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
-	end
-end
-
-if DOWNLOADING_LIBS then return end
-
-local UPDATE_NAME = "Ryze - the Rogue Mage"
-local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Ryze%20-%20the%20Rogue%20Mage.lua" .. "?rand=" .. math.random(1, 10000)
-local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
-local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
-
-function AutoupdaterMsg(msg) print("<b><font color=\"#6699FF\">"..UPDATE_NAME..":</font></b> <font color=\"#FFFFFF\">"..msg..".</font>") end
-if _G.UseUpdater then
-	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
-	if ServerData then
-		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
-		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
-		if ServerVersion then
-			ServerVersion = tonumber(ServerVersion)
-			if tonumber(version) < ServerVersion then
-				AutoupdaterMsg("New version available"..ServerVersion)
-				AutoupdaterMsg("Updating, please don't press F9")
-				DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end)	 
-			else
-				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
-			end
-		end
-	else
-		AutoupdaterMsg("Error downloading version info")
-	end
-end
+require 'SxOrbwalk'
+require 'VPrediction'
 
 ------------------------------------------------------
 --			 Callbacks				
@@ -75,6 +23,10 @@ function OnLoad()
 	Variables()
 	Menu()
 	PriorityOnLoad()
+	
+	if VIP_USER then
+		HookPackets()
+	end
 end
 
 function OnTick()
@@ -208,7 +160,7 @@ function JungleClear()
 				CastSpell(_E, JungleMob)
 			end
 			if Settings.jungle.jungleQ and GetDistance(JungleMob) <= SkillQ.range then
-				CastSpell(_Q, JungleMob)
+				CastSpell(_Q, JungleMob.x, JungleMob.z)
 			end
 			if Settings.jungle.jungleW and GetDistance(JungleMob) <= SkillW.range then
 				CastSpell(_W, JungleMob)
@@ -252,10 +204,10 @@ end
 
 function CastQ(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		if VIP_USER and Settings.misc.packets then
-			Packet("S_CAST", {spellId = _Q, targetNetworkId = unit.networkID}):send()
-		else
-			CastSpell(_Q, unit)
+		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
+				
+		if HitChance >= 2 then
+			CastSpell(_Q, CastPosition.x, CastPosition.z)
 		end
 	end
 end
@@ -429,13 +381,13 @@ function Menu()
 		Settings.drawing:addParam("mDraw", "Disable All Range Draws", SCRIPT_PARAM_ONOFF, false)
 		Settings.drawing:addParam("Target", "Draw Circle on Target", SCRIPT_PARAM_ONOFF, true)
 		Settings.drawing:addParam("myHero", "Draw My Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("myColor", "Draw My Range Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("qDraw", "Draw "..SkillQ.name.." (Q) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("qColor", "Draw "..SkillQ.name.." (Q) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("qColor", "Draw "..SkillQ.name.." (Q) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("wDraw", "Draw "..SkillW.name.." (W) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("wColor", "Draw "..SkillW.name.." (W) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		Settings.drawing:addParam("eDraw", "Draw "..SkillE.name.." (E) Range", SCRIPT_PARAM_ONOFF, true)
-		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 74, 26, 255})
+		Settings.drawing:addParam("eColor", "Draw "..SkillE.name.." (E) Color", SCRIPT_PARAM_COLOR, {255, 255, 255, 255})
 		
 		Settings.drawing:addSubMenu("Lag Free Circles", "lfc")	
 			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
@@ -454,13 +406,15 @@ function Menu()
 end
 
 function Variables()
-	SkillQ = { name = "Overload", range = 625, delay = nil, speed = nil, width = nil, ready = false }
+	SkillQ = { name = "Overload", range = 900, delay = 0.25, speed = 1700, width = 50, ready = false }
 	SkillW = { name = "Rune Prison", range = 600, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Spell Flux", range = 600, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Desperate Power", range = nil, delay = nil, speed = nil, width = nil, ready = false }
 	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
+	
+	VP = VPrediction()
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
@@ -693,7 +647,7 @@ end
 
 -- Feez
 function isFacing(source, target, lineLength)
-	local sourceVector = Vector(source.visionPos.x, source.visionPos.z)
+	local sourceVector = Vector(source.pos.x, source.pos.z)
 	local sourcePos = Vector(source.x, source.z)
 	sourceVector = (sourceVector-sourcePos):normalized()
 	sourceVector = sourcePos + (sourceVector*(GetDistance(target, source)))

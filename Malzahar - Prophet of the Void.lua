@@ -1,9 +1,9 @@
-local version = "1.04"
+local version = "1.5"
 
 --[[
 	Malzahar - Prophet of the Void
 		Author: Draconis
-		Version: 1.04
+		Version: 1.5
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -11,61 +11,8 @@ local version = "1.04"
 
 if myHero.charName ~= "Malzahar" then return end
 
-_G.UseUpdater = true
-
-local REQUIRED_LIBS = {
-	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
-	["SxOrbwalk"] = "http://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua"
-}
-
-local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
-
-function AfterDownload()
-	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
-	if DOWNLOAD_COUNT == 0 then
-		DOWNLOADING_LIBS = false
-		print("<b><font color=\"#6699FF\">Malzahar - Prophet of the Void:</font></b> <font color=\"#FFFFFF\">Required libraries downloaded successfully, please reload (double F9).</font>")
-	end
-end
-
-for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
-	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
-		require(DOWNLOAD_LIB_NAME)
-	else
-		DOWNLOADING_LIBS = true
-		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
-		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
-	end
-end
-
-if DOWNLOADING_LIBS then return end
-
-local UPDATE_NAME = "Malzahar - Prophet of the Void"
-local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/DraconisBoL/BoL/master/Malzahar%20-%20Prophet%20of%20the%20Void.lua" .. "?rand=" .. math.random(1, 10000)
-local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
-local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
-
-function AutoupdaterMsg(msg) print("<b><font color=\"#6699FF\">"..UPDATE_NAME..":</font></b> <font color=\"#FFFFFF\">"..msg..".</font>") end
-if _G.UseUpdater then
-	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
-	if ServerData then
-		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
-		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
-		if ServerVersion then
-			ServerVersion = tonumber(ServerVersion)
-			if tonumber(version) < ServerVersion then
-				AutoupdaterMsg("New version available"..ServerVersion)
-				AutoupdaterMsg("Updating, please don't press F9")
-				DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end)	 
-			else
-				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
-			end
-		end
-	else
-		AutoupdaterMsg("Error downloading version info")
-	end
-end
+require 'SxOrbwalk'
+require 'VPrediction'
 
 ------------------------------------------------------
 --			 Callbacks				
@@ -652,8 +599,8 @@ function GetBestLineFarmPosition(range, width, objects)
 	local BestPos 
 	local BestHit = 0
 	for i, object in ipairs(objects) do
-		local EndPos = Vector(myHero.visionPos) + range * (Vector(object) - Vector(myHero.visionPos)):normalized()
-		local hit = CountObjectsOnLineSegment(myHero.visionPos, EndPos, width, objects)
+		local EndPos = Vector(myHero.pos) + range * (Vector(object) - Vector(myHero.pos)):normalized()
+		local hit = CountObjectsOnLineSegment(myHero.pos, EndPos, width, objects)
 		if hit > BestHit then
 			BestHit = hit
 			BestPos = Vector(object)
@@ -682,7 +629,7 @@ function GetBestCircularFarmPosition(range, radius, objects)
     local BestPos 
     local BestHit = 0
     for i, object in ipairs(objects) do
-        local hit = CountObjectsNearPos(object.visionPos or object, range, radius, objects)
+        local hit = CountObjectsNearPos(object.pos or object, range, radius, objects)
         if hit > BestHit then
             BestHit = hit
             BestPos = Vector(object)
