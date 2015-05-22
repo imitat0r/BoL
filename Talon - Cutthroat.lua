@@ -397,7 +397,7 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillW.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SxOrb:RegisterAfterAttackCallback(function() AfterAttack)
+	SxOrb:RegisterAfterAttackCallback(function() AfterAttack() end)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}

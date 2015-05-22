@@ -13,7 +13,7 @@ if myHero.charName ~= "Ezreal" then return end
 
 require 'SxOrbwalk'
 require 'VPrediction'
-require 'Prodiction'
+if VIP_USER then require 'Prodiction' end
 
 ------------------------------------------------------
 --			 Callbacks				
