@@ -1,10 +1,10 @@
-local version = "1.4"
+local version = "1.5"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.4
-		Copyright 2014
+		Version: 1.5
+		Copyright 2015
 			
 	Dependency: Standalone
 --]]
@@ -12,7 +12,7 @@ local version = "1.4"
 if myHero.charName ~= "Ryze" then return end
 
 require 'SxOrbwalk'
-require 'VPrediction'
+require 'UPL'
 
 ------------------------------------------------------
 --			 Callbacks				
@@ -202,9 +202,9 @@ function LaneClear()
 	end
 end
 
-function CastQ(unit)
+function CastQ(unit)	
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
+		local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, unit)
 				
 		if HitChance >= 2 then
 			CastSpell(_Q, CastPosition.x, CastPosition.z)
@@ -300,7 +300,6 @@ function Checks()
 	enemyMinions:update()
 	
 	Target = GetCustomTarget()
-	SxOrb:ForceTarget(Target)
 	
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
@@ -350,7 +349,7 @@ function Menu()
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Farm Settings", "farm")
 		Settings.farm:addParam("farmKey", "Farm Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("X"))
-		Settings.farm:addParam("farmToggle", "Farm Toggle", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("A"))
+		Settings.farm:addParam("farmToggle", "Farm Toggle", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("T"))
 		Settings.farm:addParam("farmQ", "Farm with "..SkillQ.name.." (Q)", SCRIPT_PARAM_ONOFF, true)
 		Settings.farm:addParam("farmW", "Farm with "..SkillW.name.." (W)", SCRIPT_PARAM_ONOFF, false)
 		Settings.farm:addParam("farmE", "Farm with "..SkillE.name.." (E)", SCRIPT_PARAM_ONOFF, false)
@@ -395,10 +394,19 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 		
 	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")	
-		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)	
+		Settings.misc:addParam("packets", "Cast spells using Packets", SCRIPT_PARAM_ONOFF, true)
+		
+	Settings:addSubMenu("["..myHero.charName.."] - Prediction Settings", "Prediction")
+		UPL:AddToMenu(Settings.Prediction)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SxOrb:LoadToMenu(Settings.Orbwalking)
+		if _G.Reborn_Loaded ~= nil then
+			Settings.Orbwalking:addParam("Info", "Sida's Auto Carry detected!", SCRIPT_PARAM_INFO, "")
+		elseif _G.MMA_Loaded ~= nil then
+			Settings.Orbwalking:addParam("Info", "Marksman's Mighty Assistant detected!", SCRIPT_PARAM_INFO, "")
+		else
+			SxOrb:LoadToMenu(Settings.Orbwalking)
+		end
 		
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillQ.range, DAMAGE_MAGIC, true)
 	TargetSelector.name = "Ryze"
@@ -414,7 +422,8 @@ function Variables()
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
-	VP = VPrediction()
+	UPL = UPL()
+	UPL:AddSpell(_Q, { speed = SkillQ.speed, delay = SkillQ.delay, range = SkillQ.range, width = SkillQ.width, collision = true, aoe = false, type = "linear" })
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
