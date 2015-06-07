@@ -226,7 +226,6 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
-	SxOrb:ForceTarget(Target)
 	
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
