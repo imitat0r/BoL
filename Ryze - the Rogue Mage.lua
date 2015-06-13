@@ -1,9 +1,9 @@
-local version = "1.5"
+local version = "1.6"
 
 --[[
 	Ryze - the Rogue Mage
 		Author: Draconis
-		Version: 1.5
+		Version: 1.6
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -194,7 +194,7 @@ function LaneClear()
 		for i, minion in pairs(enemyMinions.objects) do
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneR and GetDistance(minion) <= SkillQ.range and SkillR.ready then CastSpell(_R) end
-				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then CastSpell(_Q, minion) end
+				if Settings.lane.laneQ and GetDistance(minion) <= SkillQ.range and SkillQ.ready then CastSpell(_Q, minion.x, minion.z) end
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then CastSpell(_W, minion) end
 				if Settings.lane.laneE and GetDistance(minion) <= SkillE.range and SkillE.ready then CastSpell(_E, minion) end
 			end		 
