@@ -164,7 +164,7 @@ function LaneClear()
 			if ValidTarget(minion) and minion ~= nil then
 				if Settings.lane.laneW and GetDistance(minion) <= SkillW.range and SkillW.ready then
 					local BestPos, BestHit = GetBestCircularFarmPosition(SkillW.range, SkillW.width, enemyMinions.objects)
-						if BestPos ~= nil and not UnderTurret(BestPos, true) then
+						if BestPos ~= nil and not UnderTurret(BestPos, true) and BestHit > 2 then
 							CastSpell(_W, BestPos.x, BestPos.z)
 						end
 				end
