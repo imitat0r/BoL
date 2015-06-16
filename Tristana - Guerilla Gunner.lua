@@ -1,9 +1,9 @@
-local version = "1.1"
+local version = "1.3"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.1
+		Version: 1.3
 		Copyright 2015
 			
 	Dependency: Standalone
