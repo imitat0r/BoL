@@ -1,9 +1,9 @@
-local version = "1.3"
+local version = "1.4"
 
 --[[
 	Tristana - Guerilla Gunner
 		Author: Draconis
-		Version: 1.3
+		Version: 1.4
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -384,7 +384,13 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SxOrb:LoadToMenu(Settings.Orbwalking)
+		if _G.Reborn_Loaded ~= nil then
+			Settings.Orbwalking:addParam("Info", "Sida's Auto Carry detected!", SCRIPT_PARAM_INFO, "")
+		elseif _G.MMA_Loaded ~= nil then
+			Settings.Orbwalking:addParam("Info", "Marksman's Mighty Assistant detected!", SCRIPT_PARAM_INFO, "")
+		else
+			SxOrb:LoadToMenu(Settings.Orbwalking, false)
+		end
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillW.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Tristana"
