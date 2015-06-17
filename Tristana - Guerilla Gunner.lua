@@ -389,7 +389,7 @@ function Menu()
 		elseif _G.MMA_Loaded ~= nil then
 			Settings.Orbwalking:addParam("Info", "Marksman's Mighty Assistant detected!", SCRIPT_PARAM_INFO, "")
 		else
-			SxOrb:LoadToMenu(Settings.Orbwalking, false)
+			SxOrb:LoadToMenu(Settings.Orbwalking)
 		end
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillW.range, DAMAGE_PHYSICAL, true)
