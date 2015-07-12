@@ -1,9 +1,10 @@
-local version = "1.11"
+local version = "1.2"
+_G.UseUpdater = true
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.11
+		Version: 1.2
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -11,9 +12,60 @@ local version = "1.11"
 
 if myHero.charName ~= "Ezreal" then return end
 
-require 'SxOrbwalk'
-require 'VPrediction'
-if VIP_USER then require 'Prodiction' end
+local REQUIRED_LIBS = {
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
+	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
+}
+
+local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
+
+function AfterDownload()
+	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
+	if DOWNLOAD_COUNT == 0 then
+		DOWNLOADING_LIBS = false
+		print("<b><font color=\"#6699FF\">Ezreal - Prodigal Explorer:</font></b> <font color=\"#FFFFFF\">Required libraries downloaded successfully, please reload (double F9).</font>")
+	end
+end
+
+for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
+	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
+		if DOWNLOAD_LIB_NAME ~= "Prodiction" then require(DOWNLOAD_LIB_NAME) end
+		if DOWNLOAD_LIB_NAME == "Prodiction" and VIP_USER then require(DOWNLOAD_LIB_NAME) end
+	else
+		DOWNLOADING_LIBS = true
+		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
+	end
+end
+
+if DOWNLOADING_LIBS then return end
+
+local UPDATE_NAME = "Ezreal - Prodigal Explorer"
+local UPDATE_HOST = "raw.github.com"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Ezreal%20-%20Prodigal%20Explorer.lua" .. "?rand=" .. math.random(1, 10000)
+local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
+local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
+
+function AutoupdaterMsg(msg) print("<b><font color=\"#6699FF\">"..UPDATE_NAME..":</font></b> <font color=\"#FFFFFF\">"..msg..".</font>") end
+if _G.UseUpdater then
+	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
+	if ServerData then
+		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
+		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
+		if ServerVersion then
+			ServerVersion = tonumber(ServerVersion)
+			if tonumber(version) < ServerVersion then
+				AutoupdaterMsg("New version available "..ServerVersion)
+				AutoupdaterMsg("Updating, please don't press F9")
+				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 2)	 
+			else
+				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+			end
+		end
+	else
+		AutoupdaterMsg("Error downloading version info")
+	end
+end
 
 ------------------------------------------------------
 --			 Callbacks				
@@ -85,6 +137,28 @@ function OnDraw()
 	end
 end
 
+function OnWndMsg(msg, key)
+	if msg == WM_LBUTTONDOWN then
+		local enemyDistance, enemySelected = 0, nil
+		for _,enemy in pairs(GetEnemyHeroes()) do
+			if ValidTarget(enemy) and GetDistance(enemy, mousePos) < 200 then 
+				if GetDistance(enemy, mousePos) <= enemyDistance or not enemySelected then
+					enemyDistance = GetDistance(enemy, mousePos)
+					enemySelected = enemy
+				end
+			end
+		end
+		
+		if enemySelected then
+			if not targetSelected or targetSelected.hash ~= enemySelected.hash then
+				targetSelected = enemySelected
+			end
+		else
+			targetSelected = nil
+		end
+	end
+end
+
 ------------------------------------------------------
 --			 Functions				
 ------------------------------------------------------
@@ -149,36 +223,20 @@ end
 
 function CastQ(unit)	
 	if unit ~= nil and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
-		if Settings.misc.prediction == 1 then
-			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
+		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillQ.delay, SkillQ.width, SkillQ.range, SkillQ.speed, myHero, true)
 					
-			if HitChance >= 2 then
-				CastSpell(_Q, CastPosition.x, CastPosition.z)
-			end
-		elseif Settings.misc.prediction == 2 and VIP_USER then
-			local pos, info = Prodiction.GetPrediction(unit, SkillQ.range, SkillQ.speed, SkillQ.delay, SkillQ.width)
-			
-			if pos ~= nil and not info.mCollision() then
-				CastSpell(_Q, pos.x, pos.z)
-			end
+		if HitChance >= 2 then
+			CastSpell(_Q, CastPosition.x, CastPosition.z)
 		end
 	end
 end
 
 function CastW(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillW.range and SkillW.ready then
-		if Settings.misc.prediction == 1 then
-			local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
+		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillW.delay, SkillW.width, SkillW.range, SkillW.speed, myHero)
 				
-			if HitChance >= 2 then
-				CastSpell(_W, CastPosition.x, CastPosition.z)
-			end
-		elseif Settings.misc.prediction == 2 and VIP_USER then
-			local pos, info = Prodiction.GetPrediction(unit, SkillW.range, SkillW.speed, SkillW.delay, SkillW.width)
-			
-			if pos ~= nil then
-				CastSpell(_W, pos.x, pos.z)
-			end
+		if HitChance >= 2 then
+			CastSpell(_W, CastPosition.x, CastPosition.z)
 		end
 	end
 end
@@ -198,29 +256,21 @@ end
 function CastR(unit)
 	if ComboKey and Settings.combo.useR2 == 1 then return end
 	if unit ~= nil and SkillR.ready then
-		if Settings.misc.prediction == 1 then
-			local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
+		local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero)
 			
-			if MainTargetHitChance >= 2 then
-				if ComboKey then
-					if Settings.combo.useR2 == 2 and nTargets >= 1 then
-						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-					elseif Settings.combo.useR2 == 3 and nTargets >= 2 then
-						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-					elseif Settings.combo.useR2 == 4 and nTargets >= 3 then
-						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-					elseif Settings.combo.useR2 == 5 and nTargets >= 4 then
-						CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
-					end
-				else
-					CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
+		if MainTargetHitChance >= 2 then
+			if ComboKey then
+				if Settings.combo.useR2 == 2 and nTargets >= 1 then
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useR2 == 3 and nTargets >= 2 then
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useR2 == 4 and nTargets >= 3 then
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
+				elseif Settings.combo.useR2 == 5 and nTargets >= 4 then
+					CastSpell(_R, AOECastPosition.x, AOECastPosition.z) 
 				end
-			end
-		elseif Settings.misc.prediction == 2 and VIP_USER then
-			local pos, info = Prodiction.GetPrediction(unit, SkillR.range, SkillR.speed, SkillR.delay, SkillR.width)
-			
-			if pos ~= nil then
-				CastSpell(_R, pos.x, pos.z)
+			else
+				CastSpell(_R, AOECastPosition.x, AOECastPosition.z)
 			end
 		end
 	end
@@ -379,10 +429,6 @@ function Menu()
 			Settings.drawing.lfc:addParam("lfc", "Lag Free Circles", SCRIPT_PARAM_ONOFF, false)
 			Settings.drawing.lfc:addParam("CL", "Quality", 4, 75, 75, 2000, 0)
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
-	
-	Settings:addSubMenu("["..myHero.charName.."] - Misc Settings", "misc")
-		Settings.misc:addParam("prediction", "Choose your prediction", SCRIPT_PARAM_LIST, 1, { "VPrediction", "Prodiction" })
-
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
 		SxOrb:LoadToMenu(Settings.Orbwalking)
@@ -628,12 +674,14 @@ function TrueRange()
 	return myHero.range + GetDistance(myHero, myHero.minBBox)
 end
 
--- Trees
 function GetCustomTarget()
- 	TargetSelector:update() 	
-	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
-	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
-	return TargetSelector.target
+	if ValidTarget(targetSelected) then
+		target = targetSelected
+	else
+		TargetSelector:update()
+		target = TargetSelector.target
+	end
+	return target
 end
 
 -- Barasia, vadash, viseversa
