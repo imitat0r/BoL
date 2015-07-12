@@ -1,9 +1,10 @@
-local version = "1.1"
+local version = "1.2"
+_G.UseUpdater = true
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.1
+		Version: 1.2
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -11,8 +12,61 @@ local version = "1.1"
 
 if myHero.charName ~= "Talon" then return end
 
-require 'SxOrbwalk'
-require 'VPrediction'
+
+local REQUIRED_LIBS = {
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
+	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
+}
+
+local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
+
+function AfterDownload()
+	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
+	if DOWNLOAD_COUNT == 0 then
+		DOWNLOADING_LIBS = false
+		print("<b><font color=\"#6699FF\">Talon - Cutthroat:</font></b> <font color=\"#FFFFFF\">Required libraries downloaded successfully, please reload (double F9).</font>")
+	end
+end
+
+for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
+	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
+		if DOWNLOAD_LIB_NAME ~= "Prodiction" then require(DOWNLOAD_LIB_NAME) end
+		if DOWNLOAD_LIB_NAME == "Prodiction" and VIP_USER then require(DOWNLOAD_LIB_NAME) end
+	else
+		DOWNLOADING_LIBS = true
+		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
+	end
+end
+
+if DOWNLOADING_LIBS then return end
+
+local UPDATE_NAME = "Talon - Cutthroat"
+local UPDATE_HOST = "raw.github.com"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Talon%20-%20Cutthroat.lua" .. "?rand=" .. math.random(1, 10000)
+local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
+local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
+
+function AutoupdaterMsg(msg) print("<b><font color=\"#6699FF\">"..UPDATE_NAME..":</font></b> <font color=\"#FFFFFF\">"..msg..".</font>") end
+if _G.UseUpdater then
+	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
+	if ServerData then
+		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
+		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
+		if ServerVersion then
+			ServerVersion = tonumber(ServerVersion)
+			if tonumber(version) < ServerVersion then
+				AutoupdaterMsg("New version available "..ServerVersion)
+				AutoupdaterMsg("Updating, please don't press F9")
+				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 2)	 
+			else
+				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+			end
+		end
+	else
+		AutoupdaterMsg("Error downloading version info")
+	end
+end
 
 ------------------------------------------------------
 --			 Callbacks				
@@ -81,6 +135,28 @@ function OnDraw()
 	end
 end
 
+function OnWndMsg(msg, key)
+	if msg == WM_LBUTTONDOWN then
+		local enemyDistance, enemySelected = 0, nil
+		for _,enemy in pairs(GetEnemyHeroes()) do
+			if ValidTarget(enemy) and GetDistance(enemy, mousePos) < 200 then 
+				if GetDistance(enemy, mousePos) <= enemyDistance or not enemySelected then
+					enemyDistance = GetDistance(enemy, mousePos)
+					enemySelected = enemy
+				end
+			end
+		end
+		
+		if enemySelected then
+			if not targetSelected or targetSelected.hash ~= enemySelected.hash then
+				targetSelected = enemySelected
+			end
+		else
+			targetSelected = nil
+		end
+	end
+end
+
 ------------------------------------------------------
 --			 Functions				
 ------------------------------------------------------
@@ -95,7 +171,6 @@ function Combo(unit)
 			CastR(unit)
 			if Settings.combo.useE then CastE(unit) end
 			if Settings.combo.useW then CastW(unit) end
-			if Settings.combo.useQ then CastQ(unit) end
 		elseif Settings.combo.comboMode == 2 then
 			if Settings.combo.comboItems then
 				UseItems(unit)
@@ -104,7 +179,6 @@ function Combo(unit)
 			CastR(unit)
 			if Settings.combo.useW then CastW(unit) end
 			if Settings.combo.useE then CastE(unit) end
-			if Settings.combo.useQ then CastQ(unit) end
 		end
 	end
 end
@@ -116,7 +190,6 @@ function Harass(unit)
 		elseif Settings.harass.harassMode == 2 then
 			if Settings.harass.useE then CastE(unit) end
 			if Settings.harass.useW then CastW(unit) end
-			if Settings.harass.useQ then CastQ(unit) end
 		end
 	end
 end
@@ -167,8 +240,10 @@ function JungleClear()
 	end
 end
 
-function AfterAttack(unit)
-	if unit ~= nil and ValidTarget(unit) and unit.type == myHero.type and GetDistance(unit) <= SkillQ.range and SkillQ.ready then
+function AfterAttack()
+	if ComboKey and not Settings.combo.useQ then return end
+	if HarassKey and IsMyManaLow("Harass") or not Settings.harass.useQ then return end
+	if Target ~= nil and ValidTarget(Target) and Target.type == myHero.type and GetDistance(Target) <= SkillQ.range and SkillQ.ready then
 		CastSpell(_Q)
 	end
 end
@@ -250,19 +325,19 @@ function Calculation()
 			local rDmg = getDmg("R", enemy, myHero, 3)
 			local iDmg = getDmg("IGNITE", enemy, myHero)
 			
-			if enemy.health <= qDmg then
+			if enemy.health <= qDmg and SkillQ.ready then
 				DrawText3D(tostring("Killable: Q"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
-			elseif enemy.health <= qDmg + wDmg then
+			elseif enemy.health <= (qDmg + wDmg) and SkillQ.ready and SkillW.ready then
 				DrawText3D(tostring("Killable: Q > W"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
-			elseif enemy.health <= rDmg then
+			elseif enemy.health <= rDmg and SkillR.ready then
 				DrawText3D(tostring("Killable: R"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
-			elseif enemy.health <= (qDmg + rDmg) then
+			elseif enemy.health <= (qDmg + rDmg) and SkillR.ready and SkillQ.ready then
 				DrawText3D(tostring("Killable: R > Q"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
-			elseif enemy.health <= (wDmg + rDmg) then
+			elseif enemy.health <= (wDmg + rDmg) and SkillR.ready and SkillQ.ready then
 				DrawText3D(tostring("Killable: R > W"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
-			elseif enemy.health <= (qDmg + rDmg + wDmg) then
+			elseif enemy.health <= (qDmg + rDmg + wDmg) and SkillR.ready and SkillQ.ready and SkillW.ready then
 				DrawText3D(tostring("Killable: R > Q > W"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
-			elseif enemy.health <= (qDmg + rDmg + wDmg + iDmg) then
+			elseif enemy.health <= (qDmg + rDmg + wDmg + iDmg) and SkillQ.ready and SkillW.ready and SkillR.ready and Ignite.ready then
 				DrawText3D(tostring("Killable: R > Q > W > IGNITE"), enemy.x, enemy.y, enemy.z, 16, ARGB(255, 10, 255, 10), true)
 			end
 		end
@@ -290,7 +365,6 @@ function Checks()
 	Ignite.ready = (Ignite.slot ~= nil and myHero:CanUseSpell(Ignite.slot) == READY)
 	
 	Target = GetCustomTarget()
-	SxOrb:ForceTarget(Target)
 	
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 end
@@ -397,7 +471,8 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillW.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
-	SxOrb:RegisterAfterAttackCallback(function() AfterAttack() end)
+	
+	SxOrb:RegisterAfterAttackCallback(AfterAttack)
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
@@ -416,6 +491,81 @@ function Variables()
 	
 	_G.oldDrawCircle = rawget(_G, 'DrawCircle')
 	_G.DrawCircle = DrawCircle2	
+	
+	ItemNames				= {
+		[3303]				= "ArchAngelsDummySpell",
+		[3007]				= "ArchAngelsDummySpell",
+		[3144]				= "BilgewaterCutlass",
+		[3188]				= "ItemBlackfireTorch",
+		[3153]				= "ItemSwordOfFeastAndFamine",
+		[3405]				= "TrinketSweeperLvl1",
+		[3411]				= "TrinketOrbLvl1",
+		[3166]				= "TrinketTotemLvl1",
+		[3450]				= "OdinTrinketRevive",
+		[2041]				= "ItemCrystalFlask",
+		[2054]				= "ItemKingPoroSnack",
+		[2138]				= "ElixirOfIron",
+		[2137]				= "ElixirOfRuin",
+		[2139]				= "ElixirOfSorcery",
+		[2140]				= "ElixirOfWrath",
+		[3184]				= "OdinEntropicClaymore",
+		[2050]				= "ItemMiniWard",
+		[3401]				= "HealthBomb",
+		[3363]				= "TrinketOrbLvl3",
+		[3092]				= "ItemGlacialSpikeCast",
+		[3460]				= "AscWarp",
+		[3361]				= "TrinketTotemLvl3",
+		[3362]				= "TrinketTotemLvl4",
+		[3159]				= "HextechSweeper",
+		[2051]				= "ItemHorn",
+		[3146]				= "HextechGunblade",
+		[3187]				= "HextechSweeper",
+		[3190]				= "IronStylus",
+		[2004]				= "FlaskOfCrystalWater",
+		[3139]				= "ItemMercurial",
+		[3222]				= "ItemMorellosBane",
+		[3042]				= "Muramana",
+		[3043]				= "Muramana",
+		[3180]				= "OdynsVeil",
+		[3056]				= "ItemFaithShaker",
+		[2047]				= "OracleExtractSight",
+		[3364]				= "TrinketSweeperLvl3",
+		[2052]				= "ItemPoroSnack",
+		[3140]				= "QuicksilverSash",
+		[3143]				= "RanduinsOmen",
+		[3074]				= "ItemTiamatCleave",
+		[3800]				= "ItemRighteousGlory",
+		[2045]				= "ItemGhostWard",
+		[3342]				= "TrinketOrbLvl1",
+		[3040]				= "ItemSeraphsEmbrace",
+		[3048]				= "ItemSeraphsEmbrace",
+		[2049]				= "ItemGhostWard",
+		[3345]				= "OdinTrinketRevive",
+		[2044]				= "SightWard",
+		[3341]				= "TrinketSweeperLvl1",
+		[3069]				= "shurelyascrest",
+		[3599]				= "KalistaPSpellCast",
+		[3185]				= "HextechSweeper",
+		[3077]				= "ItemTiamatCleave",
+		[2009]				= "ItemMiniRegenPotion",
+		[2010]				= "ItemMiniRegenPotion",
+		[3023]				= "ItemWraithCollar",
+		[3290]				= "ItemWraithCollar",
+		[2043]				= "VisionWard",
+		[3340]				= "TrinketTotemLvl1",
+		[3090]				= "ZhonyasHourglass",
+		[3154]				= "wrigglelantern",
+		[3142]				= "YoumusBlade",
+		[3157]				= "ZhonyasHourglass",
+		[3512]				= "ItemVoidGate",
+		[3131]				= "ItemSoTD",
+		[3137]				= "ItemDervishBlade",
+		[3352]				= "RelicSpotter",
+		[3350]				= "TrinketTotemLvl2",
+	}
+
+	___GetInventorySlotItem	= rawget(_G, "GetInventorySlotItem")
+	_G.GetInventorySlotItem	= GetSlotItem
 	
 	priorityTable = {
 			AP = {
@@ -535,6 +685,23 @@ function Variables()
 	end
 end
 
+function GetSlotItem(id, unit)
+	unit = unit or myHero
+
+	if (not ItemNames[id]) then
+		return ___GetInventorySlotItem(id, unit)
+	end
+
+	local name	= ItemNames[id]
+	
+	for slot = ITEM_1, ITEM_7 do
+		local item = unit:GetSpellData(slot).name
+		if ((#item > 0) and (item:lower() == name:lower())) then
+			return slot
+		end
+	end
+end
+
 function SetPriority(table, hero, priority)
 	for i=1, #table, 1 do
 		if hero.charName:find(table[i]) ~= nil then
@@ -630,12 +797,14 @@ function TrueRange()
 	return myHero.range + GetDistance(myHero, myHero.minBBox)
 end
 
--- Trees
 function GetCustomTarget()
- 	TargetSelector:update() 	
-	if _G.MMA_Target and _G.MMA_Target.type == myHero.type then return _G.MMA_Target end
-	if _G.AutoCarry and _G.AutoCarry.Crosshair and _G.AutoCarry.Attack_Crosshair and _G.AutoCarry.Attack_Crosshair.target and _G.AutoCarry.Attack_Crosshair.target.type == myHero.type then return _G.AutoCarry.Attack_Crosshair.target end
-	return TargetSelector.target
+	if ValidTarget(targetSelected) then
+		target = targetSelected
+	else
+		TargetSelector:update()
+		target = TargetSelector.target
+	end
+	return target
 end
 
 function GetBestLineFarmPosition(range, width, objects)
