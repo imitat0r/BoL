@@ -1,11 +1,11 @@
-local version = "1.2"
+local version = "1.21"
 _G.UseUpdater = true
 
 --[[
 	Talon - Cutthroat
 		Author: Draconis
-		Version: 1.2
-		Copyright 2014
+		Version: 1.21
+		Copyright 2015
 			
 	Dependency: Standalone
 --]]
@@ -171,6 +171,7 @@ function Combo(unit)
 			CastR(unit)
 			if Settings.combo.useE then CastE(unit) end
 			if Settings.combo.useW then CastW(unit) end
+			if Settings.combo.useQ and IsRebornLoaded() then CastQ(unit) end
 		elseif Settings.combo.comboMode == 2 then
 			if Settings.combo.comboItems then
 				UseItems(unit)
@@ -866,4 +867,12 @@ function DrawCircle2(x, y, z, radius, color)
   if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
     DrawCircleNextLvl(x, y, z, radius, Settings.drawing.lfc.Width, color, Settings.drawing.lfc.CL) 
   end
+end
+
+function IsRebornLoaded()
+	if _G.Reborn_Loaded ~= nil then
+		return true
+	else
+		return false
+	end
 end
