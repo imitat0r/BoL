@@ -1,10 +1,10 @@
-local version = "1.2"
+local version = "1.21"
 _G.UseUpdater = true
 
 --[[
 	Ezreal - Prodigal Explorer
 		Author: Draconis
-		Version: 1.2
+		Version: 1.21
 		Copyright 2015
 			
 	Dependency: Standalone
@@ -328,7 +328,6 @@ function Checks()
 	
 	TargetSelector:update()
 	Target = GetCustomTarget()
-	SxOrb:ForceTarget(Target)
 	
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
 	
