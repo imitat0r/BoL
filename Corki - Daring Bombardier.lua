@@ -1,9 +1,10 @@
-local version = "1.1"
+local version = "1.2"
+_G.UseUpdater = true
 
 --[[
 	Corki - Daring Bombardier
 		Author: Draconis
-		Version: 1.1
+		Version: 1.2
 		Copyright 2014
 			
 	Dependency: Standalone
@@ -11,8 +12,59 @@ local version = "1.1"
 
 if myHero.charName ~= "Corki" then return end
 
-require 'SxOrbwalk'
-require 'VPrediction'
+local REQUIRED_LIBS = {
+	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
+	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
+}
+
+local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
+
+function AfterDownload()
+	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
+	if DOWNLOAD_COUNT == 0 then
+		DOWNLOADING_LIBS = false
+		print("<b><font color=\"#6699FF\">Talon - Cutthroat:</font></b> <font color=\"#FFFFFF\">Required libraries downloaded successfully, please reload (double F9).</font>")
+	end
+end
+
+for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
+	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
+		require(DOWNLOAD_LIB_NAME)
+	else
+		DOWNLOADING_LIBS = true
+		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
+	end
+end
+
+if DOWNLOADING_LIBS then return end
+
+local UPDATE_NAME = "Corki - Daring Bombardier"
+local UPDATE_HOST = "raw.github.com"
+local UPDATE_PATH = "/DraconisBoL/BoL/master/Corki%20-%20Daring%20Bombardier.lua" .. "?rand=" .. math.random(1, 10000)
+local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
+local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
+
+function AutoupdaterMsg(msg) print("<b><font color=\"#6699FF\">"..UPDATE_NAME..":</font></b> <font color=\"#FFFFFF\">"..msg..".</font>") end
+if _G.UseUpdater then
+	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
+	if ServerData then
+		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
+		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
+		if ServerVersion then
+			ServerVersion = tonumber(ServerVersion)
+			if tonumber(version) < ServerVersion then
+				AutoupdaterMsg("New version available "..ServerVersion)
+				AutoupdaterMsg("Updating, please don't press F9")
+				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 2)	 
+			else
+				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+			end
+		end
+	else
+		AutoupdaterMsg("Error downloading version info")
+	end
+end
 
 ------------------------------------------------------
 --			 Callbacks				
@@ -92,14 +144,14 @@ function Combo(unit)
 		CastW(unit)
 		CastQ(unit)
 		CastE(unit)
-		HandleRCast(unit)
+		CastR(unit)
 	end
 end
 
 function Harass(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow() then
 		if Settings.harass.useQ then CastQ(unit) end
-		if Settings.harass.useR then HandleRCast(unit) end
+		if Settings.harass.useR then CastR(unit) end
 	end
 end
 
@@ -167,29 +219,9 @@ function CastE(unit)
 	end
 end
 
-function HandleRCast(unit)
-	if unit ~= nil and ValidTarget(unit) then
-		if TheBigOne == true then
-			CastR_TBO(unit)
-		else
-			CastR(unit)
-		end
-	end
-end
-
 function CastR(unit)
 	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready then
 		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillR.delay, SkillR.width, SkillR.range, SkillR.speed, myHero, true)
-		
-		if HitChance >= 2 then
-			CastSpell(_R, CastPosition.x, CastPosition.z)
-		end
-	end
-end
-
-function CastR_TBO(unit)
-	if unit ~= nil and GetDistance(unit) <= SkillR.range and SkillR.ready then
-		local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(unit, SkillR.delay, SkillR.width*2, SkillR.range, SkillR.speed, myHero, true)
 		
 		if HitChance >= 2 then
 			CastSpell(_R, CastPosition.x, CastPosition.z)
@@ -207,9 +239,9 @@ function KillSteal()
 				CastQ(enemy)
 			elseif enemy.health <= (qDmg + rDmg) and GetDistance(enemy) <= SkillQ.range then
 				CastQ(enemy)
-				HandleRCast(enemy)
+				CastR(enemy)
 			elseif enemy.health <= rDmg then
-				HandleRCast(enemy)
+				CastR(enemy)
 			end
 
 			if Settings.ks.autoIgnite then
@@ -250,8 +282,6 @@ function Checks()
 	SxOrb:ForceTarget(Target)
 	
 	if Settings.drawing.lfc.lfc then _G.DrawCircle = DrawCircle2 else _G.DrawCircle = _G.oldDrawCircle end
-	
-	if TargetHaveBuff("mbcheck2", myHero) then TheBigOne = true else TheBigOne = false end
 end
 
 function IsMyManaLow()
@@ -327,7 +357,7 @@ function Variables()
 	SkillQ = { name = "Phosphorus Bomb", range = 825, delay = 0.5, speed = 1125, width = 450, ready = false }
 	SkillW = { name = "Valkyrie", range = 800, delay = nil, speed = nil, width = nil, ready = false }
 	SkillE = { name = "Gatling Gun", range = 600, delay = nil, speed = nil, width = nil, ready = false }
-	SkillR = { name = "Missile Barrage", range = 1225, delay = 0.25, speed = 2000, width = 75, ready = false }
+	SkillR = { name = "Missile Barrage", range = 1225, delay = 0.25, speed = 2000, width = 40, ready = false }
 	Ignite = { name = "summonerdot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillR.range, myHero, MINION_SORT_HEALTH_ASC)
@@ -336,8 +366,6 @@ function Variables()
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
-	
-	TheBigOne = false
 	
 	if GetGame().map.shortName == "twistedTreeline" then
 		TwistedTreeline = true 
