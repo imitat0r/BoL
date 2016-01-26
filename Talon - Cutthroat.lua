@@ -164,7 +164,7 @@ function Combo(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
 		if Settings.combo.comboMode == 1 then
 			if Settings.combo.comboItems then
-				UseItems(unit)
+				return
 			end
 			
 			CastR(unit)
@@ -173,7 +173,7 @@ function Combo(unit)
 			if Settings.combo.useQ and IsRebornLoaded() then CastQ(unit) end
 		elseif Settings.combo.comboMode == 2 then
 			if Settings.combo.comboItems then
-				UseItems(unit)
+				return
 			end
 			
 			CastR(unit)

@@ -121,7 +121,7 @@ function Combo(unit)
 		CastQ(unit)
 		CastW(unit)
 		CastE(unit)
-		if Settings.combo.comboItems then UseItems(unit) end
+		if Settings.combo.comboItems then return end
 		if Settings.combo.useR then CastR(unit) end
 	end
 end

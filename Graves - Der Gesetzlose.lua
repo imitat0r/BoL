@@ -89,7 +89,7 @@ function Combo(unit)
 		if Settings.combo.rangeAA and GetDistance(unit) >= TrueRange() then return end
 		
 		if Settings.combo.comboItems then
-			UseItems(unit)
+			return
 		end
 		
 		if Settings.combo.useR then CastR(unit) end

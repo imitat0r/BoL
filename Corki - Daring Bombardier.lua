@@ -138,7 +138,7 @@ end
 function Combo(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
 		if Settings.combo.comboItems then
-			UseItems(unit)
+			return
 		end
 		
 		CastW(unit)
