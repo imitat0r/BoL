@@ -437,7 +437,7 @@ function Variables()
 	SkillW = { name = "Essence Flux", range = 1000, delay = 0.25, speed = 1600, width = 80, ready = false }
 	SkillE = { name = "Arcane Shift", range = 475, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Trueshot Barrage", range = math.huge, delay = 1.0, speed = 2000, width = 160, ready = false }
-	Ignite = { name = "summonerdot", range = 600, slot = nil }
+	Ignite = { name = "SummonerDot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
