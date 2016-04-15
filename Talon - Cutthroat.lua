@@ -1,4 +1,4 @@
-local version = "1.21"
+local version = "1.22"
 _G.UseUpdater = true
 
 --[[
@@ -163,19 +163,11 @@ end
 function Combo(unit)
 	if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
 		if Settings.combo.comboMode == 1 then
-			if Settings.combo.comboItems then
-				return
-			end
-			
 			CastR(unit)
 			if Settings.combo.useE then CastE(unit) end
 			if Settings.combo.useW then CastW(unit) end
 			if Settings.combo.useQ and IsRebornLoaded() then CastQ(unit) end
 		elseif Settings.combo.comboMode == 2 then
-			if Settings.combo.comboItems then
-				return
-			end
-			
 			CastR(unit)
 			if Settings.combo.useW then CastW(unit) end
 			if Settings.combo.useE then CastE(unit) end
@@ -466,7 +458,7 @@ function Variables()
 	SkillW = { name = "Rake", range = 600, delay = 0.7, speed = 900, angle = 80, ready = false }
 	SkillE = { name = "Cutthroat", range = 700, delay = nil, speed = nil, width = nil, ready = false }
 	SkillR = { name = "Shadow Assault", range = 650, delay = nil, speed = nil, width = nil, ready = false }
-	Ignite = { name = "summonerdot", range = 600, slot = nil }
+	Ignite = { name = "SummonerDot", range = 600, slot = nil }
 	
 	enemyMinions = minionManager(MINION_ENEMY, SkillW.range, myHero, MINION_SORT_HEALTH_ASC)
 	
