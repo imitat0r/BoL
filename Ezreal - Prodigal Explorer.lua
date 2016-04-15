@@ -1,4 +1,4 @@
-local version = "1.21"
+local version = "1.22"
 _G.UseUpdater = true
 
 --[[
