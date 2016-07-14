@@ -1,4 +1,4 @@
-_G.version = "2.05"
+_G.version = "2.06"
 _G.UseUpdater = true
 
 if myHero.charName ~= "Ryze" then return end
