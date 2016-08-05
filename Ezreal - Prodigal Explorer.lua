@@ -1,4 +1,4 @@
-local version = "1.22"
+local version = "1.23"
 _G.UseUpdater = true
 
 --[[
@@ -13,7 +13,6 @@ _G.UseUpdater = true
 if myHero.charName ~= "Ezreal" then return end
 
 local REQUIRED_LIBS = {
-	["SxOrbwalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
 	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
 }
 
@@ -425,7 +424,11 @@ function Menu()
 			Settings.drawing.lfc:addParam("Width", "Width", 4, 1, 1, 10, 0)
 	
 	Settings:addSubMenu("["..myHero.charName.."] - Orbwalking Settings", "Orbwalking")
-		SxOrb:LoadToMenu(Settings.Orbwalking)
+		if IsRebornLoaded() then
+			Settings.Orbwalking:addParam("Info", "Sida's Auto Carry detected!", SCRIPT_PARAM_INFO, "")
+		else
+			SxOrb:LoadToMenu(Settings.Orbwalking)
+		end
 	
 	TargetSelector = TargetSelector(TARGET_LESS_CAST, SkillQ.range, DAMAGE_PHYSICAL, true)
 	TargetSelector.name = "Ezreal"
@@ -442,6 +445,10 @@ function Variables()
 	enemyMinions = minionManager(MINION_ENEMY, SkillQ.range, myHero, MINION_SORT_HEALTH_ASC)
 	
 	VP = VPrediction()
+	
+	if not IsRebornLoaded() then
+		require("SxOrbwalk")
+	end
 	
 	JungleMobs = {}
 	JungleFocusMobs = {}
@@ -712,5 +719,13 @@ end
 function SetRRange()
 	if SkillR.ready then
 		SkillR.range = Settings.ks.ksRrange
+	end
+end
+
+function IsRebornLoaded()
+	if _G.Reborn_Loaded ~= nil then
+		return true
+	else
+		return false
 	end
 end
